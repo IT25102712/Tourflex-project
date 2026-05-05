@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TOURFLEX - Edit Review</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        .btn {
+            background: #0d6efd;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .btn:hover {
+            background: #0b5ed7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Edit Review</h2>
+
+    <form action="/review/update" method="post">
+        <input type="hidden" name="id" th:value="${review.id}">
+        <input type="hidden" name="reviewDate" th:value="${review.reviewDate}">
+
+        <label>Name</label>
+        <input type="text" name="customerName" th:value="${review.customerName}" required>
+
+        <label>Email</label>
+        <input type="email" name="customerEmail" th:value="${review.customerEmail}" required>
+
+        <label>Package Name</label>
+        <input type="text" name="packageName" th:value="${review.packageName}" required>
+
+        <label>Rating</label>
+        <select name="rating" required>
+            <option value="5" th:selected="${review.rating == 5}">5 - Excellent</option>
+            <option value="4" th:selected="${review.rating == 4}">4 - Very Good</option>
+            <option value="3" th:selected="${review.rating == 3}">3 - Good</option>
+            <option value="2" th:selected="${review.rating == 2}">2 - Average</option>
+            <option value="1" th:selected="${review.rating == 1}">1 - Poor</option>
+        </select>
+
+        <label>Comment</label>
+        <textarea name="comment" required th:text="${review.comment}"></textarea>
+
+        <button type="submit" class="btn">Update Review</button>
+    </form>
+</div>
+
+</body>
+</html>

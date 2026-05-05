@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TOURFLEX - Admin Custom Packages</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        table {
+            width: 95%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background: #0d6efd;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<h1>All Custom Packages</h1>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Location</th>
+        <th>Days</th>
+        <th>Places</th>
+        <th>People</th>
+        <th>Type</th>
+        <th>Hotel</th>
+        <th>Hotel Star</th>
+        <th>Transport</th>
+        <th>Total Price</th>
+    </tr>
+
+    <tr th:each="p : ${packages}">
+        <td th:text="${p.id}"></td>
+        <td th:text="${p.customerName}"></td>
+        <td th:text="${p.customerEmail}"></td>
+        <td th:text="${p.location}"></td>
+        <td th:text="${p.numberOfDays}"></td>
+        <td th:text="${p.visitingPlaces}"></td>
+        <td th:text="${p.numberOfPeople}"></td>
+        <td th:text="${p.packageType}"></td>
+        <td th:text="${p.hotelName}"></td>
+        <td th:text="${p.hotelStarRating}"></td>
+        <td th:text="${p.transportType}"></td>
+        <td th:text="${p.totalPrice}"></td>
+    </tr>
+</table>
+
+</body>
+</html>
