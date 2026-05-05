@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TOURFLEX - Payment Success</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            background: white;
+            margin: 60px auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        h2 {
+            color: green;
+        }
+
+        .info {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            background: #0d6efd;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #0b5ed7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>✅ Payment Successful!</h2>
+
+    <div class="info"><b>Name:</b> <span th:text="${payment.customerName}"></span></div>
+    <div class="info"><b>Email:</b> <span th:text="${payment.customerEmail}"></span></div>
+    <div class="info"><b>Amount Paid:</b> Rs. <span th:text="${payment.amount}"></span></div>
+    <div class="info"><b>Status:</b> <span th:text="${payment.paymentStatus}"></span></div>
+
+    <a href="/" class="btn">Back to Home</a>
+</div>
+
+</body>
+</html>

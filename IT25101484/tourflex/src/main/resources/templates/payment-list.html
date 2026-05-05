@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payments</title>
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        table {
+            width: 90%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #0d6efd;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>All Payments</h2>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Amount</th>
+        <th>Status</th>
+    </tr>
+
+    <tr th:each="p : ${payments}">
+        <td th:text="${p.id}"></td>
+        <td th:text="${p.customerName}"></td>
+        <td th:text="${p.customerEmail}"></td>
+        <td th:text="${p.amount}"></td>
+        <td th:text="${p.paymentStatus}"></td>
+    </tr>
+
+</table>
+
+</body>
+</html>
