@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TOURFLEX - Packages</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        .navbar {
+            background: #0d6efd;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .navbar .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar .links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 18px;
+            font-weight: bold;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 30px 0 10px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            width: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        }
+
+        .card img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .info {
+            margin: 6px 0;
+        }
+
+        .price {
+            color: green;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .btn {
+            display: block;
+            text-align: center;
+            background: #0d6efd;
+            color: white;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #0b5ed7;
+        }
+
+        .details-btn {
+            display: block;
+            text-align: center;
+            background: #6c757d;
+            color: white;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .details-btn:hover {
+            background: #5c636a;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo">TOURFLEX</div>
+
+    <div class="links">
+        <a href="/">Home</a>
+        <a href="/packages/list">Packages</a>
+        <a href="/review/add-page">Reviews</a>
+
+        <span th:if="${session.user == null}">
+            <a href="/user/register-page">Register</a>
+            <a href="/user/login-page">Login</a>
+        </span>
+
+        <span th:if="${session.user != null}">
+            <a href="/custom-package/create">Customize Package</a>
+            <a href="/custom-package/my">My Custom Packages</a>
+            <a href="/booking/my-bookings">My Bookings</a>
+            <a href="/user/logout">Logout</a>
+        </span>
+    </div>
+</div>
+
+<h1>🌍 Available Tour Packages</h1>
+
+<div class="container">
+
+    <div class="card" th:each="pkg : ${packages}">
+        <img th:if="${pkg.imageName != null and !#strings.isEmpty(pkg.imageName)}"
+             th:src="@{'/images/' + ${pkg.imageName}}" alt="Uploaded Image">
+
+        <img th:if="${(pkg.imageName == null or #strings.isEmpty(pkg.imageName)) and pkg.location == 'Ella'}"
+             th:src="@{/images/ella.jpg}" alt="Ella">
+
+        <img th:if="${(pkg.imageName == null or #strings.isEmpty(pkg.imageName)) and pkg.location == 'Yala'}"
+             th:src="@{/images/yala.jpg}" alt="Yala">
+
+        <img th:if="${(pkg.imageName == null or #strings.isEmpty(pkg.imageName)) and pkg.location == 'Bentota'}"
+             th:src="@{/images/bentota.jpg}" alt="Bentota">
+
+        <img th:if="${(pkg.imageName == null or #strings.isEmpty(pkg.imageName)) and pkg.location == 'Sigiriya'}"
+             th:src="@{/images/sigiriya.jpg}" alt="Sigiriya">
+
+        <div class="card-body">
+            <div class="title" th:text="${pkg.name}"></div>
+            <div class="info">📍 <span th:text="${pkg.location}"></span></div>
+            <div class="info">🏷️ <span th:text="${pkg.category}"></span></div>
+            <div class="info">📅 Days: <span th:text="${pkg.days}"></span></div>
+            <div class="price">Rs. <span th:text="${pkg.price}"></span></div>
+
+            <a th:href="@{'/packages/details/' + ${pkg.id}}" class="details-btn">View Details</a>
+            <a th:href="@{'/booking/book/' + ${pkg.id}}" class="btn">Book Now</a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

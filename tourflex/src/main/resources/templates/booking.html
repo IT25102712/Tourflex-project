@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TOURFLEX - Booking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        .navbar {
+            background: #0d6efd;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 700px;
+            background: white;
+            margin: 40px auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .info {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .btn {
+            width: 100%;
+            background: #0d6efd;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #0b5ed7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo">TOURFLEX</div>
+    <div>
+        <a href="/">Home</a>
+        <a href="/packages/list">Packages</a>
+        <a href="/user/login-page">Login</a>
+        <a href="/review/add-page">Reviews</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Book Your Tour Package</h2>
+
+    <div class="info"><b>Package:</b> <span th:text="${pkg.name}"></span></div>
+    <div class="info"><b>Location:</b> <span th:text="${pkg.location}"></span></div>
+    <div class="info"><b>Category:</b> <span th:text="${pkg.category}"></span></div>
+    <div class="info"><b>Type:</b> <span th:text="${pkg.type}"></span></div>
+    <div class="info"><b>Days:</b> <span th:text="${pkg.days}"></span></div>
+    <div class="info"><b>Price:</b> Rs. <span th:text="${pkg.price}"></span></div>
+
+    <form action="/booking/save" method="post">
+        <input type="hidden" name="packageName" th:value="${pkg.name}">
+        <input type="hidden" name="location" th:value="${pkg.location}">
+        <input type="hidden" name="totalPrice" th:value="${pkg.price}">
+
+        <label>Your Name</label>
+        <input type="text" name="customerName" required>
+
+        <label>Your Email</label>
+        <input type="email" name="customerEmail" required>
+
+        <label>Booking Date</label>
+        <input type="date" name="bookingDate" required>
+
+        <label>Number of People</label>
+        <input type="number" name="numberOfPeople" required>
+
+        <button type="submit" class="btn">Confirm Booking</button>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TOURFLEX - My Custom Packages</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        .navbar {
+            background: #0d6efd;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1100px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        }
+
+        .message {
+            color: green;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .btn {
+            background: #0d6efd;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background: #0d6efd;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            padding: 8px 12px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .delete-btn:hover {
+            background: #bb2d3b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo">TOURFLEX</div>
+    <div>
+        <a href="/">Home</a>
+        <a href="/custom-package/create">Customize Package</a>
+        <a href="/custom-package/my">My Custom Packages</a>
+        <a href="/booking/my-bookings">My Bookings</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2>My Custom Packages</h2>
+
+    <div class="message" th:if="${message}" th:text="${message}"></div>
+
+    <form action="/custom-package/search" method="post">
+        <label>Enter Your Email</label>
+        <input type="email" name="customerEmail" placeholder="Enter your email" required>
+        <button type="submit" class="btn">Search Custom Packages</button>
+    </form>
+
+    <table th:if="${packages != null}">
+        <tr>
+            <th>ID</th>
+            <th>Location</th>
+            <th>Days</th>
+            <th>Places</th>
+            <th>People</th>
+            <th>Type</th>
+            <th>Hotel</th>
+            <th>Transport</th>
+            <th>Total Price</th>
+            <th>Action</th>
+        </tr>
+
+        <tr th:each="p : ${packages}">
+            <td th:text="${p.id}"></td>
+            <td th:text="${p.location}"></td>
+            <td th:text="${p.numberOfDays}"></td>
+            <td th:text="${p.visitingPlaces}"></td>
+            <td th:text="${p.numberOfPeople}"></td>
+            <td th:text="${p.packageType}"></td>
+            <td th:text="${p.hotelName}"></td>
+            <td th:text="${p.transportType}"></td>
+            <td th:text="${p.totalPrice}"></td>
+            <td>
+                <a th:href="@{'/custom-package/delete/' + ${p.id} + '?email=' + ${searchedEmail}}"
+                   class="delete-btn"
+                   onclick="return confirm('Delete this custom package?');">
+                    Delete
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>

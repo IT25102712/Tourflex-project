@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TOURFLEX - Add Hotel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      background: white;
+      margin: 40px auto;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    .btn {
+      width: 100%;
+      background: #0d6efd;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #0b5ed7;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Add Hotel</h2>
+
+  <form action="/hotel/save" method="post">
+    <label>Hotel Name</label>
+    <input type="text" name="hotelName" required>
+
+    <label>Location</label>
+    <select name="location" required>
+      <option value="Ella">Ella</option>
+      <option value="Kandy">Kandy</option>
+      <option value="Nuwara Eliya">Nuwara Eliya</option>
+      <option value="Yala">Yala</option>
+      <option value="Bentota">Bentota</option>
+      <option value="Galle">Galle</option>
+      <option value="Sigiriya">Sigiriya</option>
+      <option value="Trincomalee">Trincomalee</option>
+      <option value="Mirissa">Mirissa</option>
+      <option value="Colombo">Colombo</option>
+      <option value="Jaffna">Jaffna</option>
+      <option value="Anuradhapura">Anuradhapura</option>
+      <option value="Polonnaruwa">Polonnaruwa</option>
+      <option value="Dambulla">Dambulla</option>
+      <option value="Habarana">Habarana</option>
+      <option value="Pasikuda">Pasikuda</option>
+      <option value="Arugam Bay">Arugam Bay</option>
+      <option value="Hikkaduwa">Hikkaduwa</option>
+      <option value="Unawatuna">Unawatuna</option>
+      <option value="Weligama">Weligama</option>
+      <option value="Tangalle">Tangalle</option>
+      <option value="Negombo">Negombo</option>
+      <option value="Kalpitiya">Kalpitiya</option>
+      <option value="Kitulgala">Kitulgala</option>
+      <option value="Belihuloya">Belihuloya</option>
+      <option value="Horton Plains">Horton Plains</option>
+      <option value="Bandarawela">Bandarawela</option>
+      <option value="Badulla">Badulla</option>
+      <option value="Ratnapura">Ratnapura</option>
+      <option value="Sinharaja">Sinharaja</option>
+      <option value="Udawalawe">Udawalawe</option>
+      <option value="Minneriya">Minneriya</option>
+      <option value="Wilpattu">Wilpattu</option>
+      <option value="Pinnawala">Pinnawala</option>
+      <option value="Matara">Matara</option>
+      <option value="Batticaloa">Batticaloa</option>
+      <option value="Ampara">Ampara</option>
+      <option value="Kurunegala">Kurunegala</option>
+      <option value="Matale">Matale</option>
+      <option value="Mahiyanganaya">Mahiyanganaya</option>
+      <option value="Mannar">Mannar</option>
+      <option value="Vavuniya">Vavuniya</option>
+      <option value="Kilinochchi">Kilinochchi</option>
+      <option value="Mullaitivu">Mullaitivu</option>
+      <option value="Chilaw">Chilaw</option>
+      <option value="Puttalam">Puttalam</option>
+      <option value="Beruwala">Beruwala</option>
+      <option value="Aluthgama">Aluthgama</option>
+      <option value="Ahangama">Ahangama</option>
+      <option value="Tissamaharama">Tissamaharama</option>
+    </select>
+
+    <label>Star Rating</label>
+    <select name="starRating" required>
+      <option value="3 Star">3 Star</option>
+      <option value="4 Star">4 Star</option>
+      <option value="5 Star">5 Star</option>
+    </select>
+
+    <button type="submit" class="btn">Add Hotel</button>
+  </form>
+</div>
+
+</body>
+</html>

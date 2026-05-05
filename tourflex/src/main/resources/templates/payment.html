@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TOURFLEX - Payment</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, #0d6efd, #00c6ff);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar a {
+            color: white;
+            margin-left: 18px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 800px;
+            background: white;
+            margin: 40px auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+        }
+
+        h2, h3 {
+            text-align: center;
+        }
+
+        .saved-card-box {
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .use-btn {
+            background: #198754;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .use-btn:hover {
+            background: #157347;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .btn {
+            width: 100%;
+            background: #198754;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #157347;
+        }
+
+        .readonly-field {
+            background: #f1f1f1;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <div class="logo">TOURFLEX</div>
+    <div>
+        <a href="/">Home</a>
+        <a href="/packages/list">Packages</a>
+        <a href="/booking/my-bookings">My Bookings</a>
+        <a href="/user/logout">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2>💳 Payment Page</h2>
+
+    <!-- SAVED CARDS -->
+    <div th:if="${savedCards != null}">
+        <div class="saved-card-box" th:each="card : ${savedCards}">
+            <p><b>Card Holder:</b> <span th:text="${card.cardHolderName}"></span></p>
+            <p><b>Card Number:</b> <span th:text="${card.maskedCardNumber}"></span></p>
+
+            <button type="button"
+                    class="use-btn"
+                    th:attr="data-holder=${card.cardHolderName},
+                             data-number=${card.cardNumber},
+                             data-expiry=${card.expiryDate}"
+                    onclick="useSavedCard(this)">
+                Use This Card
+            </button>
+
+            <a th:href="@{'/saved-card/delete/' + ${card.id}}"
+               class="delete-btn"
+               onclick="return confirm('Delete this card?');">
+                Delete
+            </a>
+        </div>
+    </div>
+
+    <!-- SAVE CARD -->
+    <h3>Save New Card</h3>
+
+    <form action="/saved-card/save" method="post" onsubmit="return validateSaveCard()">
+
+        <input type="text" id="saveName" name="cardHolderName" placeholder="Card Holder Name" required>
+
+        <input type="text" id="saveNumber" name="cardNumber" placeholder="Card Number" required>
+
+        <input type="text" id="saveExpiry" name="expiryDate" placeholder="MM/YY" required>
+
+        <!-- ✅ FIXED (IMPORTANT) -->
+        <select name="cardType" required>
+            <option value="">Select Card Type</option>
+            <option value="Visa">Visa</option>
+            <option value="MasterCard">MasterCard</option>
+            <option value="Amex">Amex</option>
+        </select>
+
+        <button class="btn">Save Card</button>
+    </form>
+
+    <!-- PAYMENT -->
+    <h3>Make Payment</h3>
+
+    <form action="/payment/save" method="post" onsubmit="return validatePayment()">
+
+        <label>Customer Name</label>
+        <input type="text" id="custName" name="customerName"
+               placeholder="Enter your name"
+               th:value="${loggedInUser.name}" required>
+
+        <label>Customer Email</label>
+        <input type="email" id="custEmail" name="customerEmail"
+               placeholder="Enter your email"
+               th:value="${loggedInUser.email}" required>
+
+        <input type="text" id="cardHolderName" name="cardHolderName" placeholder="Card Holder Name" required>
+
+        <input type="text" id="cardNumber" name="cardNumber" placeholder="Card Number" required>
+
+        <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY" required>
+
+        <input type="password" id="cvv" name="cvv" placeholder="CVV" required>
+
+        <input type="number" name="amount" th:value="${amount}" readonly class="readonly-field">
+
+        <button class="btn">Pay Now</button>
+    </form>
+</div>
+
+<script>
+    function useSavedCard(btn) {
+        document.getElementById("cardHolderName").value = btn.getAttribute("data-holder");
+        document.getElementById("cardNumber").value = btn.getAttribute("data-number");
+        document.getElementById("expiryDate").value = btn.getAttribute("data-expiry");
+        alert("Card loaded. Enter CVV and proceed.");
+    }
+
+    function validateSaveCard() {
+
+        let name = document.getElementById("saveName").value.trim();
+        let number = document.getElementById("saveNumber").value.trim();
+        let expiry = document.getElementById("saveExpiry").value.trim();
+
+        let namePattern = /^[A-Za-z ]+$/;
+        let cardPattern = /^[0-9]{16}$/;
+        let expiryPattern = /^(0[1-9]|1[0-2])\/\d{2}$/;
+
+        if (!namePattern.test(name)) {
+            alert("Name must contain only letters");
+            return false;
+        }
+
+        if (!cardPattern.test(number)) {
+            alert("Card number must be exactly 16 digits");
+            return false;
+        }
+
+        if (!expiryPattern.test(expiry)) {
+            alert("Expiry must be MM/YY format");
+            return false;
+        }
+
+        return true;
+    }
+
+    function validatePayment() {
+
+        let name = document.getElementById("custName").value.trim();
+        let email = document.getElementById("custEmail").value.trim();
+        let number = document.getElementById("cardNumber").value.trim();
+        let expiry = document.getElementById("expiryDate").value.trim();
+        let cvv = document.getElementById("cvv").value.trim();
+
+        let namePattern = /^[A-Za-z ]+$/;
+        let cardPattern = /^[0-9]{16}$/;
+        let expiryPattern = /^(0[1-9]|1[0-2])\/\d{2}$/;
+        let cvvPattern = /^[0-9]{3}$/;
+
+        if (!namePattern.test(name)) {
+            alert("Invalid name");
+            return false;
+        }
+
+        if (!email.includes("@")) {
+            alert("Invalid email");
+            return false;
+        }
+
+        if (!cardPattern.test(number)) {
+            alert("Card must be 16 digits");
+            return false;
+        }
+
+        if (!expiryPattern.test(expiry)) {
+            alert("Expiry format MM/YY");
+            return false;
+        }
+
+        if (!cvvPattern.test(cvv)) {
+            alert("CVV must be 3 digits");
+            return false;
+        }
+
+        return true;
+    }
+</script>
+
+</body>
+</html>

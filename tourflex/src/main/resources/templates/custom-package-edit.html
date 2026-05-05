@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Custom Package</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f8;
+        }
+
+        .container {
+            width: 60%;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Edit Custom Package</h2>
+
+    <form action="/custom-package/update" method="post">
+
+        <input type="hidden" name="id" th:value="${pkg.id}">
+
+        <label>Location</label>
+        <input type="text" name="location" th:value="${pkg.location}" required>
+
+        <label>Number of Days</label>
+        <input type="number" name="numberOfDays" th:value="${pkg.numberOfDays}" required>
+
+        <label>Number of People</label>
+        <input type="number" name="numberOfPeople" th:value="${pkg.numberOfPeople}" required>
+
+        <label>Hotel</label>
+        <input type="text" name="hotelName" th:value="${pkg.hotelName}" required>
+
+        <label>Transport</label>
+        <input type="text" name="transportType" th:value="${pkg.transportType}" required>
+
+        <button type="submit">Update Package</button>
+    </form>
+</div>
+
+</body>
+</html>

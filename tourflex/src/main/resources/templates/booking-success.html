@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TOURFLEX - Booking Success</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            background: white;
+            margin: 60px auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        h2 {
+            color: green;
+        }
+
+        .info {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            background: #0d6efd;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #0b5ed7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>✅ Booking Successful!</h2>
+
+    <div class="info"><b>Name:</b> <span th:text="${booking.customerName}"></span></div>
+    <div class="info"><b>Email:</b> <span th:text="${booking.customerEmail}"></span></div>
+    <div class="info"><b>Package:</b> <span th:text="${booking.packageName}"></span></div>
+    <div class="info"><b>Location:</b> <span th:text="${booking.location}"></span></div>
+    <div class="info"><b>Date:</b> <span th:text="${booking.bookingDate}"></span></div>
+    <div class="info"><b>People:</b> <span th:text="${booking.numberOfPeople}"></span></div>
+    <div class="info"><b>Total Price:</b> Rs. <span th:text="${booking.totalPrice}"></span></div>
+
+    <a th:href="@{'/payment/page?amount=' + ${booking.totalPrice}}" class="btn">Proceed to Payment</a>
+</div>
+
+</body>
+</html>

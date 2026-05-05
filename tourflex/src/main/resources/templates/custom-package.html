@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TOURFLEX - Customize Package</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        .navbar {
+            background: #0d6efd;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .navbar .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 850px;
+            background: white;
+            margin: 40px auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .message {
+            color: green;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        .btn {
+            width: 100%;
+            background: #198754;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #157347;
+        }
+
+        .price-box {
+            background: #eef8f1;
+            border: 1px solid #b7e4c7;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .price-box h3 {
+            margin: 0 0 10px 0;
+            color: #157347;
+        }
+
+        .price-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+
+        .small-note {
+            color: #555;
+            font-size: 14px;
+            text-align: center;
+            margin-top: -8px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo">TOURFLEX</div>
+    <div>
+        <a href="/">Home</a>
+        <a href="/packages/list">Packages</a>
+        <a href="/custom-package/create">Customize Package</a>
+        <a href="/custom-package/my">My Custom Packages</a>
+        <a href="/booking/my-bookings">My Bookings</a>
+        <a href="/review/add-page">Reviews</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Create Your Custom Tour Package</h2>
+
+    <div class="message" th:if="${message}" th:text="${message}"></div>
+
+    <div class="price-box">
+        <h3>Estimated Total Price</h3>
+        <div class="price-value" id="estimatedPrice">Rs. 0.00</div>
+    </div>
+
+    <form action="/custom-package/save" method="post">
+        <label>Your Name</label>
+        <input type="text" name="customerName" required>
+
+        <label>Your Email</label>
+        <input type="email" name="customerEmail" required>
+
+        <label>Location</label>
+        <select name="location" id="location" required onchange="loadHotels(); calculatePrice();">
+            <option value="">Select Location</option>
+            <option value="Ella">Ella</option>
+            <option value="Kandy">Kandy</option>
+            <option value="Nuwara Eliya">Nuwara Eliya</option>
+            <option value="Yala">Yala</option>
+            <option value="Bentota">Bentota</option>
+            <option value="Galle">Galle</option>
+            <option value="Sigiriya">Sigiriya</option>
+            <option value="Trincomalee">Trincomalee</option>
+            <option value="Mirissa">Mirissa</option>
+            <option value="Colombo">Colombo</option>
+            <option value="Jaffna">Jaffna</option>
+            <option value="Anuradhapura">Anuradhapura</option>
+            <option value="Polonnaruwa">Polonnaruwa</option>
+            <option value="Dambulla">Dambulla</option>
+            <option value="Habarana">Habarana</option>
+            <option value="Pasikuda">Pasikuda</option>
+            <option value="Arugam Bay">Arugam Bay</option>
+            <option value="Hikkaduwa">Hikkaduwa</option>
+            <option value="Unawatuna">Unawatuna</option>
+            <option value="Weligama">Weligama</option>
+            <option value="Tangalle">Tangalle</option>
+            <option value="Negombo">Negombo</option>
+            <option value="Kalpitiya">Kalpitiya</option>
+            <option value="Kitulgala">Kitulgala</option>
+            <option value="Belihuloya">Belihuloya</option>
+            <option value="Horton Plains">Horton Plains</option>
+            <option value="Bandarawela">Bandarawela</option>
+            <option value="Badulla">Badulla</option>
+            <option value="Ratnapura">Ratnapura</option>
+            <option value="Sinharaja">Sinharaja</option>
+            <option value="Udawalawe">Udawalawe</option>
+            <option value="Minneriya">Minneriya</option>
+            <option value="Wilpattu">Wilpattu</option>
+            <option value="Pinnawala">Pinnawala</option>
+            <option value="Matara">Matara</option>
+            <option value="Batticaloa">Batticaloa</option>
+            <option value="Ampara">Ampara</option>
+            <option value="Kurunegala">Kurunegala</option>
+            <option value="Matale">Matale</option>
+            <option value="Mahiyanganaya">Mahiyanganaya</option>
+            <option value="Mannar">Mannar</option>
+            <option value="Vavuniya">Vavuniya</option>
+            <option value="Kilinochchi">Kilinochchi</option>
+            <option value="Mullaitivu">Mullaitivu</option>
+            <option value="Chilaw">Chilaw</option>
+            <option value="Puttalam">Puttalam</option>
+            <option value="Beruwala">Beruwala</option>
+            <option value="Aluthgama">Aluthgama</option>
+            <option value="Ahangama">Ahangama</option>
+            <option value="Tissamaharama">Tissamaharama</option>
+        </select>
+
+        <label>Number of Days</label>
+        <input type="number" name="numberOfDays" id="numberOfDays" min="1" required oninput="calculatePrice();">
+
+        <label>Visiting Places</label>
+        <textarea name="visitingPlaces" required placeholder="Example: Nine Arches Bridge, Little Adam’s Peak, Ravana Falls"></textarea>
+
+        <label>Number of People</label>
+        <input type="number" name="numberOfPeople" id="numberOfPeople" min="1" required oninput="calculatePrice();">
+
+        <label>Package Type</label>
+        <select name="packageType" required>
+            <option value="Single">Single</option>
+            <option value="Couple">Couple</option>
+            <option value="Family">Family</option>
+            <option value="Group">Group</option>
+        </select>
+
+        <label>Hotel</label>
+        <select name="hotelName" id="hotelName" required onchange="updateHotelStar(); calculatePrice();">
+            <option value="">Select Hotel</option>
+        </select>
+
+        <label>Hotel Star Rating</label>
+        <input type="text" name="hotelStarRating" id="hotelStarRating" readonly required>
+
+        <div class="small-note">Hotel list now comes from the database based on the selected location.</div>
+
+        <label>Transport</label>
+        <select name="transportType" id="transportType" required onchange="calculatePrice();">
+            <option value="">Select Transport</option>
+            <option value="Car">Car</option>
+            <option value="Mini Van">Mini Van</option>
+            <option value="Van">Van</option>
+            <option value="Jeep">Jeep</option>
+            <option value="Small Bus">Small Bus</option>
+            <option value="Luxury Bus">Luxury Bus</option>
+        </select>
+
+        <button type="submit" class="btn">Create Custom Package</button>
+    </form>
+</div>
+
+<script>
+    let hotelsForLocation = [];
+
+    async function loadHotels() {
+        const location = document.getElementById("location").value;
+        const hotelSelect = document.getElementById("hotelName");
+        const hotelStarInput = document.getElementById("hotelStarRating");
+
+        hotelSelect.innerHTML = '<option value="">Select Hotel</option>';
+        hotelStarInput.value = "";
+        hotelsForLocation = [];
+
+        if (!location) {
+            return;
+        }
+
+        const response = await fetch(`/hotel/by-location?location=${encodeURIComponent(location)}`);
+        const hotels = await response.json();
+
+        hotelsForLocation = hotels;
+
+        hotels.forEach(hotel => {
+            const option = document.createElement("option");
+            option.value = hotel.hotelName;
+            option.textContent = hotel.hotelName;
+            hotelSelect.appendChild(option);
+        });
+    }
+
+    function updateHotelStar() {
+        const selectedHotelName = document.getElementById("hotelName").value;
+        const hotelStarInput = document.getElementById("hotelStarRating");
+
+        const selectedHotel = hotelsForLocation.find(h => h.hotelName === selectedHotelName);
+
+        hotelStarInput.value = selectedHotel ? selectedHotel.starRating : "";
+    }
+
+    function calculatePrice() {
+        const days = parseInt(document.getElementById("numberOfDays").value) || 0;
+        const people = parseInt(document.getElementById("numberOfPeople").value) || 0;
+        const hotelStar = document.getElementById("hotelStarRating").value;
+        const transport = document.getElementById("transportType").value;
+
+        let basePerDay = 8000;
+        let hotelCost = 0;
+        let transportCost = 0;
+
+        if (hotelStar === "3 Star") {
+            hotelCost = 3000;
+        } else if (hotelStar === "4 Star") {
+            hotelCost = 5000;
+        } else if (hotelStar === "5 Star") {
+            hotelCost = 8000;
+        }
+
+        if (transport === "Car") {
+            transportCost = 2000;
+        } else if (transport === "Mini Van") {
+            transportCost = 2800;
+        } else if (transport === "Van") {
+            transportCost = 3500;
+        } else if (transport === "Jeep") {
+            transportCost = 4000;
+        } else if (transport === "Small Bus") {
+            transportCost = 5000;
+        } else if (transport === "Luxury Bus") {
+            transportCost = 7000;
+        }
+
+        let total = (days * (basePerDay + hotelCost + transportCost)) + (people * 1000);
+
+        document.getElementById("estimatedPrice").textContent = "Rs. " + total.toFixed(2);
+    }
+</script>
+
+</body>
+</html>

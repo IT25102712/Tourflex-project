@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TOURFLEX - Reviews</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        .navbar {
+            background: #0d6efd;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        .btn {
+            background: #0d6efd;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .btn:hover {
+            background: #0b5ed7;
+        }
+
+        .filter-box {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #eef3ff;
+            border-radius: 8px;
+        }
+
+        .message {
+            color: green;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .review-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .actions a {
+            margin-right: 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .delete-link {
+            color: red;
+        }
+
+        .edit-link {
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo">TOURFLEX</div>
+    <div>
+        <a href="/">Home</a>
+        <a href="/user/register-page">Register</a>
+        <a href="/user/login-page">Login</a>
+        <a href="/packages/list">Packages</a>
+        <a href="/custom-package/create">Customize Package</a>
+        <a href="/custom-package/my">My Custom Packages</a>
+        <a href="/review/add-page">Reviews</a>
+        <a href="/booking/my-bookings">My Bookings</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <h2>Add Review</h2>
+
+    <div class="message" th:if="${message}" th:text="${message}"></div>
+
+    <form action="/review/save" method="post">
+        <input type="text" name="customerName" placeholder="Your Name" required>
+        <input type="email" name="customerEmail" placeholder="Your Email" required>
+        <input type="text" name="packageName" placeholder="Package Name (Ella, Yala...)" required>
+
+        <select name="rating" required>
+            <option value="">Select Rating</option>
+            <option value="5">5 - Excellent</option>
+            <option value="4">4 - Very Good</option>
+            <option value="3">3 - Good</option>
+            <option value="2">2 - Average</option>
+            <option value="1">1 - Poor</option>
+        </select>
+
+        <textarea name="comment" placeholder="Write your review here..." required></textarea>
+
+        <button type="submit" class="btn">Submit Review</button>
+    </form>
+
+    <!-- 🔥 FILTER SECTION -->
+    <div class="filter-box">
+        <h3>Filter Reviews</h3>
+
+        <form method="get" action="/review/add-page">
+            <label>Sort</label>
+            <select name="sort">
+                <option value="">None</option>
+                <option value="latest">Latest</option>
+                <option value="oldest">Oldest</option>
+            </select>
+
+            <label>Package</label>
+            <select name="pkg">
+                <option value="">All Packages</option>
+                <option value="Ella">Ella</option>
+                <option value="Yala">Yala</option>
+                <option value="Bentota">Bentota</option>
+                <option value="Sigiriya">Sigiriya</option>
+            </select>
+
+            <button class="btn">Apply Filter</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <h2>All Reviews</h2>
+
+    <div th:each="r : ${reviews}" class="review-card">
+        <b th:text="${r.packageName}"></b>
+        <p th:text="${r.comment}"></p>
+
+        <div>⭐ Rating: <span th:text="${r.rating}"></span>/5</div>
+        <div>👤 <span th:text="${r.customerName}"></span></div>
+        <div>📧 <span th:text="${r.customerEmail}"></span></div>
+        <div>📅 <span th:text="${r.reviewDate}"></span></div>
+
+        <div class="actions">
+            <a class="edit-link" th:href="@{'/review/edit/' + ${r.id}}">Edit</a>
+            <a class="delete-link" th:href="@{'/review/delete/' + ${r.id}}">Delete</a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
