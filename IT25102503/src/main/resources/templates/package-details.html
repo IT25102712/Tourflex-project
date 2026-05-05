@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>TOURFLEX - Package Details</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+    }
+
+    .navbar {
+      background: #0d6efd;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .navbar .logo {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .navbar .links a {
+      color: white;
+      text-decoration: none;
+      margin-left: 18px;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      background: white;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    }
+
+    .image-box img {
+      width: 100%;
+      height: 420px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .content {
+      padding: 25px;
+    }
+
+    .title {
+      font-size: 34px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .line {
+      margin: 10px 0;
+      font-size: 18px;
+    }
+
+    .price {
+      color: green;
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #198754;
+      color: white;
+      padding: 12px 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background: #157347;
+    }
+
+    .desc {
+      margin-top: 20px;
+      line-height: 1.7;
+      font-size: 17px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="logo">TOURFLEX</div>
+
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="/packages/list">Packages</a>
+    <a href="/review/add-page">Reviews</a>
+
+    <span th:if="${session.user == null}">
+            <a href="/user/register-page">Register</a>
+            <a href="/user/login-page">Login</a>
+        </span>
+
+    <span th:if="${session.user != null}">
+            <a href="/custom-package/create">Customize Package</a>
+            <a href="/custom-package/my">My Custom Packages</a>
+            <a href="/booking/my-bookings">My Bookings</a>
+            <a href="/user/logout">Logout</a>
+        </span>
+  </div>
+</div>
+
+<div class="container">
+  <div class="image-box">
+    <img th:if="${pkg.imageName != null and !#strings.isEmpty(pkg.imageName)}"
+         th:src="@{'/images/' + ${pkg.imageName}}"
+         alt="Package Image">
+
+    <img th:if="${(pkg.imageName == null or #strings.isEmpty(pkg.imageName)) and pkg.location == 'Ella'}"
+         th:src="@{/images/ella.jpg}"
+         alt="Ella">
+
+    <img th:if="${(pkg.imageName == null or #strings.isEmpty(pkg.imageName)) and pkg.location == 'Yala'}"
+         th:src="@{/images/yala.jpg}"
+         alt="Yala">
+
+    <img th:if="${(pkg.imageName == null or #strings.isEmpty(pkg.imageName)) and pkg.location == 'Bentota'}"
+         th:src="@{/images/bentota.jpg}"
+         alt="Bentota">
+
+    <img th:if="${(pkg.imageName == null or #strings.isEmpty(pkg.imageName)) and pkg.location == 'Sigiriya'}"
+         th:src="@{/images/sigiriya.jpg}"
+         alt="Sigiriya">
+  </div>
+
+  <div class="content">
+    <div class="title" th:text="${pkg.name}"></div>
+
+    <div class="line"><b>Location:</b> <span th:text="${pkg.location}"></span></div>
+    <div class="line"><b>Category:</b> <span th:text="${pkg.category}"></span></div>
+    <div class="line"><b>Package Type:</b> <span th:text="${pkg.type}"></span></div>
+    <div class="line"><b>Maximum People:</b> <span th:text="${pkg.maxPeople}"></span></div>
+    <div class="line"><b>Number of Days:</b> <span th:text="${pkg.days}"></span></div>
+    <div class="line"><b>Hotel:</b> <span th:text="${pkg.hotelName}"></span></div>
+    <div class="line"><b>Transport:</b> <span th:text="${pkg.transportMethods}"></span></div>
+    <div class="line"><b>Meals:</b> <span th:text="${pkg.meals}"></span></div>
+
+    <div class="desc">
+      <b>Description:</b><br>
+      <span th:text="${pkg.description}"></span>
+    </div>
+
+    <div class="price">Rs. <span th:text="${pkg.price}"></span></div>
+
+    <a th:href="@{'/booking/book/' + ${pkg.id}}" class="btn">Book Now</a>
+  </div>
+</div>
+
+</body>
+</html>

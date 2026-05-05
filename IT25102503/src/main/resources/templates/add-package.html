@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TOURFLEX - Add Package</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            background: white;
+            margin: 40px auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        .btn {
+            width: 100%;
+            background: #0d6efd;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #0b5ed7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Add Tour Package</h2>
+
+    <form action="/packages/add" method="post" enctype="multipart/form-data">
+        <label>Name</label>
+        <input type="text" name="name" required>
+
+        <label>Category</label>
+        <select name="category" required>
+            <option value="Adventure">Adventure</option>
+            <option value="Safari">Safari</option>
+            <option value="Luxury">Luxury</option>
+            <option value="Holiday Relax">Holiday Relax</option>
+        </select>
+
+        <label>Type</label>
+        <select name="type" required>
+            <option value="Single">Single</option>
+            <option value="Couple">Couple</option>
+            <option value="Family">Family</option>
+            <option value="Group">Group</option>
+        </select>
+
+        <label>Max People</label>
+        <input type="number" name="maxPeople" required>
+
+        <label>Location</label>
+        <input type="text" name="location" required>
+
+        <label>Days</label>
+        <input type="number" name="days" required>
+
+        <label>Price</label>
+        <input type="number" step="0.01" name="price" required>
+
+        <label>Hotel Name</label>
+        <input type="text" name="hotelName" required>
+
+        <label>Transport Methods</label>
+        <input type="text" name="transportMethods" placeholder="Example: Car, Van, Jeep" required>
+
+        <label>Meals</label>
+        <input type="text" name="meals" placeholder="Example: Breakfast + Dinner" required>
+
+        <label>Description</label>
+        <textarea name="description" required></textarea>
+
+        <label>Upload Image</label>
+        <input type="file" name="imageFile" accept="image/*" required>
+
+        <button type="submit" class="btn">Add Package</button>
+    </form>
+</div>
+
+</body>
+</html>

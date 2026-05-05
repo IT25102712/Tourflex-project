@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>TOURFLEX - Edit Package</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      background: white;
+      margin: 40px auto;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      height: 100px;
+    }
+
+    .btn {
+      width: 100%;
+      background: #0d6efd;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #0b5ed7;
+    }
+
+    img {
+      width: 180px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Edit Tour Package</h2>
+
+  <form action="/packages/update" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="id" th:value="${pkg.id}">
+
+    <label>Name</label>
+    <input type="text" name="name" th:value="${pkg.name}" required>
+
+    <label>Category</label>
+    <select name="category" required>
+      <option value="Adventure" th:selected="${pkg.category == 'Adventure'}">Adventure</option>
+      <option value="Safari" th:selected="${pkg.category == 'Safari'}">Safari</option>
+      <option value="Luxury" th:selected="${pkg.category == 'Luxury'}">Luxury</option>
+      <option value="Holiday Relax" th:selected="${pkg.category == 'Holiday Relax'}">Holiday Relax</option>
+    </select>
+
+    <label>Type</label>
+    <select name="type" required>
+      <option value="Single" th:selected="${pkg.type == 'Single'}">Single</option>
+      <option value="Couple" th:selected="${pkg.type == 'Couple'}">Couple</option>
+      <option value="Family" th:selected="${pkg.type == 'Family'}">Family</option>
+      <option value="Group" th:selected="${pkg.type == 'Group'}">Group</option>
+    </select>
+
+    <label>Max People</label>
+    <input type="number" name="maxPeople" th:value="${pkg.maxPeople}" required>
+
+    <label>Location</label>
+    <input type="text" name="location" th:value="${pkg.location}" required>
+
+    <label>Days</label>
+    <input type="number" name="days" th:value="${pkg.days}" required>
+
+    <label>Price</label>
+    <input type="number" step="0.01" name="price" th:value="${pkg.price}" required>
+
+    <label>Hotel Name</label>
+    <input type="text" name="hotelName" th:value="${pkg.hotelName}" required>
+
+    <label>Transport Methods</label>
+    <input type="text" name="transportMethods" th:value="${pkg.transportMethods}" required>
+
+    <label>Meals</label>
+    <input type="text" name="meals" th:value="${pkg.meals}" required>
+
+    <label>Description</label>
+    <textarea name="description" required th:text="${pkg.description}"></textarea>
+
+    <div th:if="${pkg.imageName != null}">
+      <label>Current Image</label><br>
+      <img th:src="@{'/images/' + ${pkg.imageName}}" alt="Current Image">
+    </div>
+
+    <label>Upload New Image (optional)</label>
+    <input type="file" name="imageFile" accept="image/*">
+
+    <button type="submit" class="btn">Update Package</button>
+  </form>
+</div>
+
+</body>
+</html>
