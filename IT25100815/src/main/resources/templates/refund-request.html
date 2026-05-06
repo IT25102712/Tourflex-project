@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TOURFLEX - Refund Request</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            background: white;
+            margin: 40px auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        textarea {
+            height: 90px;
+        }
+
+        .btn {
+            width: 100%;
+            background: #198754;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #157347;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Refund Request Form</h2>
+
+    <form action="/refund/save" method="post">
+        <input type="hidden" name="bookingId" th:value="${booking.id}">
+        <input type="hidden" name="customerName" th:value="${booking.customerName}">
+        <input type="hidden" name="customerEmail" th:value="${booking.customerEmail}">
+        <input type="hidden" name="packageName" th:value="${booking.packageName}">
+
+        <label>Customer Name</label>
+        <input type="text" th:value="${booking.customerName}" readonly>
+
+        <label>Customer Email</label>
+        <input type="text" th:value="${booking.customerEmail}" readonly>
+
+        <label>Package Name</label>
+        <input type="text" th:value="${booking.packageName}" readonly>
+
+        <label>Bank Name</label>
+        <input type="text" name="bankName" required>
+
+        <label>Account Holder Name</label>
+        <input type="text" name="accountHolderName" required>
+
+        <label>Account Number</label>
+        <input type="text" name="accountNumber" required>
+
+        <label>Branch Name</label>
+        <input type="text" name="branchName" required>
+
+        <label>Note</label>
+        <textarea name="note" placeholder="Any extra refund note"></textarea>
+
+        <button type="submit" class="btn">Submit Refund Request</button>
+    </form>
+</div>
+
+</body>
+</html>
