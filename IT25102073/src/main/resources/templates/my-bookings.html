@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TOURFLEX - My Bookings</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        .navbar {
+            background: #0d6efd;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .navbar .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1100px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .message {
+            color: green;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .welcome {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background: #0d6efd;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #dc3545;
+            color: white;
+            padding: 8px 12px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+
+        .cancel-btn:hover {
+            background: #bb2d3b;
+        }
+
+        .refund-btn {
+            background: #198754;
+            color: white;
+            padding: 8px 12px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .refund-btn:hover {
+            background: #157347;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo">TOURFLEX</div>
+    <div>
+        <a href="/">Home</a>
+        <a href="/packages/list">Packages</a>
+        <a href="/review/add-page">Reviews</a>
+        <a href="/custom-package/create">Customize Package</a>
+        <a href="/custom-package/my">My Custom Packages</a>
+        <a href="/booking/my-bookings">My Bookings</a>
+        <a href="/user/logout">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2>My Bookings</h2>
+
+    <div class="welcome">
+        Logged in bookings for: <span th:text="${loggedInEmail}"></span>
+    </div>
+
+    <div class="message" th:if="${message}" th:text="${message}"></div>
+
+    <table th:if="${bookings != null}">
+        <tr>
+            <th>ID</th>
+            <th>Package</th>
+            <th>Location</th>
+            <th>Date</th>
+            <th>People</th>
+            <th>Total Price</th>
+            <th>Status</th>
+            <th>Refund</th>
+            <th>Action</th>
+        </tr>
+
+        <tr th:each="b : ${bookings}">
+            <td th:text="${b.id}"></td>
+            <td th:text="${b.packageName}"></td>
+            <td th:text="${b.location}"></td>
+            <td th:text="${b.bookingDate}"></td>
+            <td th:text="${b.numberOfPeople}"></td>
+            <td th:text="${b.totalPrice}"></td>
+            <td th:text="${b.bookingStatus}"></td>
+            <td th:text="${b.refundStatus}"></td>
+            <td>
+                <div th:if="${b.bookingStatus != 'Cancelled'}">
+                    <a th:href="@{'/booking/cancel/' + ${b.id}}"
+                       class="cancel-btn"
+                       onclick="return confirm('Are you sure you want to cancel this booking?');">
+                        Cancel
+                    </a>
+                </div>
+
+                <div th:if="${b.bookingStatus == 'Cancelled' and b.refundStatus == 'Pending'}">
+                    <a th:href="@{'/refund/request/' + ${b.id}}" class="refund-btn">
+                        Submit Refund Details
+                    </a>
+                </div>
+
+                <div th:if="${b.bookingStatus == 'Cancelled' and b.refundStatus != 'Pending'}">
+                    Refund Requested
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>
