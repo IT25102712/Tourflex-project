@@ -4,8 +4,8 @@
     <title>TOURFLEX - Home</title>
     <link rel="stylesheet" href="/css/style.css">
 
-    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
         body {
@@ -38,6 +38,22 @@
 
         .navbar a:hover {
             text-decoration: underline;
+        }
+
+        /* LOGOUT BUTTON STYLE */
+        .btn-logout {
+            background: #ffc107;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: black !important;
+            margin-left: 15px;
+            transition: 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #ffb300;
+            text-decoration: none !important;
         }
 
         /* HERO */
@@ -152,8 +168,16 @@
         <a href="/custom-package/my">My Custom Packages</a>
         <a href="/booking/my-bookings">My Bookings</a>
         <a href="/review/add-page">Reviews</a>
-        <a href="/user/register-page">Register</a>
-        <a href="/user/login-page">Login</a>
+
+        <th:block th:if="${session.user == null}">
+            <a href="/user/register-page">Register</a>
+            <a href="/user/login-page">Login</a>
+        </th:block>
+
+        <th:block th:if="${session.user != null}">
+            <a href="/user/profile" style="color: #ffc107; font-weight: bold;">Profile</a>
+            <a href="/user/logout" class="btn-logout">Logout</a>
+        </th:block>
     </div>
 </div>
 

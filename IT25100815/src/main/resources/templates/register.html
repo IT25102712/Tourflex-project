@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Register</title>
-
     <link rel="stylesheet" href="/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 </head>
@@ -16,13 +15,13 @@
 <div class="form-container">
     <h2>Create Account</h2>
 
-    <!-- ✅ Added onsubmit -->
-    <form action="/user/register" method="post" onsubmit="return validateRegister()">
+    <div th:if="${error}" style="color: red; background: #fee; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #f5c2c2;">
+        <p th:text="${error}" style="margin: 0;"></p>
+    </div>
 
-        <!-- ✅ Added id -->
+    <form action="/user/register" method="post" onsubmit="return validateRegister()">
         <input type="text" id="name" name="name" placeholder="Full Name" required>
 
-        <!-- ✅ Added id -->
         <input type="email" id="email" name="email" placeholder="Email" required>
 
         <input type="password" name="password" placeholder="Password" required>
@@ -31,21 +30,17 @@
     </form>
 </div>
 
-<!-- ✅ Validation Script -->
 <script>
     function validateRegister() {
-
         let name = document.getElementById("name").value.trim();
         let email = document.getElementById("email").value.trim();
 
-        // Name validation (only letters)
         let namePattern = /^[A-Za-z ]+$/;
         if (!namePattern.test(name)) {
             alert("Name must contain only letters (no numbers)");
             return false;
         }
 
-        // Email validation (@gmail.com)
         if (!email.endsWith("@gmail.com")) {
             alert("Email must be a valid @gmail.com address");
             return false;
@@ -56,4 +51,5 @@
 </script>
 
 </body>
+</html>
 </html>

@@ -1,8 +1,6 @@
 <!DOCTYPE html>
-<html>
-<head>
+<html xmlns:th="http://www.thymeleaf.org"> <head>
     <title>Login</title>
-
     <link rel="stylesheet" href="/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 </head>
@@ -16,33 +14,28 @@
 <div class="form-container">
     <h2>Login</h2>
 
-    <!-- ✅ Added onsubmit -->
+    <div th:if="${error}" style="color: red; background-color: #fce4e4; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #f5c2c2;">
+        <p th:text="${error}" style="margin: 0; font-size: 14px;"></p>
+    </div>
+
     <form action="/user/login" method="post" onsubmit="return validateLogin()">
-
-        <!-- ✅ Added id -->
         <input type="email" id="email" name="email" placeholder="Email" required>
-
         <input type="password" name="password" placeholder="Password" required>
-
         <button class="btn">Login</button>
     </form>
 </div>
 
-<!-- ✅ Validation Script -->
 <script>
     function validateLogin() {
-
         let email = document.getElementById("email").value.trim();
-
-        // Basic email validation
         if (!email.includes("@")) {
             alert("Please enter a valid email address");
             return false;
         }
-
         return true;
     }
 </script>
 
 </body>
 </html>
+
