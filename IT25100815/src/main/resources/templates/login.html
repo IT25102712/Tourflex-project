@@ -1,28 +1,60 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"> <head>
-    <title>Login</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-</head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Login - TOURFLEX')}"></head>
 
-<body>
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col md:flex-row">
 
-<div class="navbar">
-    <div class="logo">TOURFLEX</div>
+<div class="flex-1 flex items-center justify-center p-8 bg-surface relative z-10">
+    <div class="w-full max-w-md bg-white p-10 rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20">
+        <div class="text-center mb-8">
+            <a th:href="@{/}" class="text-headline-md font-headline-md font-extrabold tracking-tight text-primary inline-block mb-2 no-underline hover:text-primary-container transition-colors">TOURFLEX</a>
+            <h2 class="text-headline-sm font-headline-md text-on-background mt-2">Welcome Back</h2>
+            <p class="text-body-md text-on-surface-variant mt-2">Log in to continue planning your Sri Lankan adventure.</p>
+        </div>
+
+        <div th:if="${error}" class="bg-error-container text-on-error-container p-4 rounded-xl mb-6 text-sm font-label-md flex items-start gap-2">
+            <span class="material-symbols-outlined text-sm mt-0.5">error</span>
+            <p th:text="${error}" class="m-0"></p>
+        </div>
+
+        <form action="/user/login" method="post" onsubmit="return validateLogin()" class="flex flex-col gap-5">
+            <div>
+                <label for="email" class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Email</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">mail</span>
+                    <input type="email" id="email" name="email" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant" placeholder="name@example.com" required>
+                </div>
+            </div>
+            
+            <div>
+                <label for="password" class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Password</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">lock</span>
+                    <input type="password" id="password" name="password" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-primary text-on-primary py-4 rounded-xl font-label-md hover:bg-primary-container transition-all mt-4 shadow-md flex justify-center items-center gap-2 group">
+                Sign In
+                <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </button>
+        </form>
+
+        <div class="mt-8 text-center text-sm font-label-md text-on-surface-variant">
+            Don't have an account? <a th:href="@{/user/register-page}" class="text-secondary-container hover:text-secondary transition-colors font-bold ml-1">Register</a>
+        </div>
+    </div>
 </div>
 
-<div class="form-container">
-    <h2>Login</h2>
-
-    <div th:if="${error}" style="color: red; background-color: #fce4e4; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #f5c2c2;">
-        <p th:text="${error}" style="margin: 0; font-size: 14px;"></p>
+<div class="hidden md:flex flex-1 relative overflow-hidden bg-primary">
+    <img src="https://images.unsplash.com/photo-1546708973-14bc699ec1c7?auto=format&fit=crop&w=1200&q=80" alt="Beautiful Sri Lankan coast" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60">
+    <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent"></div>
+    <div class="absolute bottom-20 left-16 right-16">
+        <div class="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20">
+            <h3 class="text-display-lg-mobile text-white font-bold mb-4 text-balance">Your journey begins here.</h3>
+            <p class="text-white/80 text-body-lg text-balance">Access your bookings, custom itineraries, and exclusive island offers.</p>
+        </div>
     </div>
-
-    <form action="/user/login" method="post" onsubmit="return validateLogin()">
-        <input type="email" id="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button class="btn">Login</button>
-    </form>
 </div>
 
 <script>
@@ -38,4 +70,3 @@
 
 </body>
 </html>
-
