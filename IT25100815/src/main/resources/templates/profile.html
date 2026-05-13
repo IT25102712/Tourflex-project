@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('User Profile - TOURFLEX')}"></head>
+
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="flex-1 flex items-center justify-center py-24 px-margin-mobile">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20 overflow-hidden mt-12">
+        <div class="h-32 bg-primary relative">
+            <div class="absolute inset-0 bg-gradient-to-r from-primary to-primary-container"></div>
+            <!-- Decorative wave or graphic could go here -->
+        </div>
+
+        <div class="px-8 pb-8 relative">
+            <div class="flex justify-center -mt-16 mb-4">
+                <div class="relative">
+                    <div class="w-32 h-32 rounded-full border-4 border-white bg-surface-container-high flex items-center justify-center overflow-hidden shadow-lg">
+                        <span th:if="${session.user.image == null}" th:text="${#strings.substring(session.user.name, 0, 1)}" class="text-4xl font-bold text-primary">S</span>
+                        <img th:if="${session.user.image != null}" th:src="@{'/user/display/' + ${session.user.id}}" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <label for="imageUpload" class="absolute bottom-1 right-1 w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary shadow-md border border-outline-variant/20 cursor-pointer hover:bg-surface-container-low transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">edit</span>
+                    </label>
+                    <form id="uploadForm" th:action="@{/user/upload-image}" method="post" enctype="multipart/form-data">
+                        <input type="file" id="imageUpload" name="profileImage" class="hidden" onchange="this.form.submit()">
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mb-6">
+                <h2 class="text-headline-md font-headline-md text-on-background mb-1" th:text="${session.user.name}">User Name</h2>
+                <span class="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-label-md font-bold uppercase tracking-wider">Explorer</span>
+            </div>
+
+            <div class="space-y-4 mb-8">
+                <div class="flex items-center gap-4 text-on-surface-variant text-body-md font-body-md bg-surface-container-lowest border border-outline-variant/30 p-4 rounded-2xl">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined">mail</span>
+                    </div>
+                    <span th:text="${session.user.email}">user@example.com</span>
+                </div>
+                
+                <div class="flex items-center gap-4 text-on-surface-variant text-body-md font-body-md bg-surface-container-lowest border border-outline-variant/30 p-4 rounded-2xl">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined">call</span>
+                    </div>
+                    <span th:text="${session.user.phone}">+94 000 000 000</span>
+                </div>
+                
+                <div class="flex items-center gap-4 text-on-surface-variant text-body-md font-body-md bg-surface-container-lowest border border-outline-variant/30 p-4 rounded-2xl">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined">location_on</span>
+                    </div>
+                    <span th:text="${session.user.address}">Address</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <a th:href="@{/user/edit}" class="w-full bg-primary text-on-primary py-3.5 rounded-xl font-label-md hover:bg-primary-container transition-all shadow-md text-center">
+                    Edit Profile
+                </a>
+                <form th:action="@{/user/delete}" method="post" class="w-full m-0">
+                    <button type="submit" class="w-full bg-error-container text-on-error-container py-3.5 rounded-xl font-label-md hover:bg-error-container/80 transition-all font-bold" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
+                        Delete Account
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

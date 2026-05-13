@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Edit Profile - TOURFLEX')}"></head>
+
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="flex-1 flex items-center justify-center py-24 px-margin-mobile">
+    <div class="w-full max-w-lg bg-white p-10 rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20 mt-12">
+        <div class="text-center mb-8">
+            <h2 class="text-headline-md font-headline-md text-on-background">Edit Your Profile</h2>
+            <p class="text-body-md text-on-surface-variant mt-2">Update your personal information</p>
+        </div>
+
+        <form th:action="@{/user/update}" th:object="${user}" method="post" onsubmit="return validateEdit()" class="flex flex-col gap-4">
+            <input type="hidden" th:field="*{id}" />
+
+            <div>
+                <label for="name" class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Full Name</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">person</span>
+                    <input type="text" id="name" th:field="*{name}" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant" required>
+                </div>
+            </div>
+
+            <div>
+                <label for="email" class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Email (Cannot be changed)</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">mail</span>
+                    <input type="email" id="email" th:field="*{email}" class="w-full bg-surface-container-low border border-outline-variant/30 text-on-surface-variant/70 rounded-xl pl-12 pr-4 py-3 outline-none cursor-not-allowed" readonly>
+                </div>
+            </div>
+
+            <div>
+                <label for="phone" class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Phone Number</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">call</span>
+                    <input type="text" id="phone" th:field="*{phone}" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant" required>
+                </div>
+                <div id="phoneError" class="text-error text-xs font-semibold mt-1 ml-1 hidden"></div>
+            </div>
+
+            <div>
+                <label for="address" class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Address</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">location_on</span>
+                    <input type="text" id="address" th:field="*{address}" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant" required>
+                </div>
+            </div>
+
+            <div>
+                <label for="password" class="block text-label-md text-on-surface-variant mb-1.5 ml-1">New Password</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">lock</span>
+                    <input type="password" id="password" th:field="*{password}" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant" placeholder="Enter new or current password" required>
+                </div>
+                <div id="passwordError" class="text-error text-xs font-semibold mt-1 ml-1 hidden"></div>
+            </div>
+
+            <div class="flex flex-col gap-3 mt-4">
+                <button type="submit" class="w-full bg-primary text-on-primary py-3.5 rounded-xl font-label-md hover:bg-primary-container transition-all shadow-md">
+                    Update Profile
+                </button>
+                <a th:href="@{/user/profile}" class="w-full bg-surface-container-low text-on-surface-variant py-3.5 rounded-xl font-label-md hover:bg-surface-container-high transition-all text-center border border-outline-variant/30">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<script>
+    function validateEdit() {
+        let phone = document.getElementById("phone");
+        let password = document.getElementById("password");
+
+        let phoneError = document.getElementById("phoneError");
+        let passwordError = document.getElementById("passwordError");
+
+        phoneError.style.display = "none";
+        passwordError.style.display = "none";
+        
+        phone.classList.remove("border-error", "ring-error");
+        password.classList.remove("border-error", "ring-error");
+
+        let isValid = true;
+
+        if (phone.value.trim().length !== 10 || isNaN(phone.value.trim())) {
+            phoneError.innerText = "Phone number must be exactly 10 digits.";
+            phoneError.style.display = "block";
+            phone.classList.add("border-error", "ring-error");
+            isValid = false;
+        }
+
+        let passRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{6,}$/;
+        if (!passRegex.test(password.value)) {
+            passwordError.innerText = "Password must be 6+ characters with letters, numbers, and symbols.";
+            passwordError.style.display = "block";
+            password.classList.add("border-error", "ring-error");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+</script>
+
+</body>
+</html>
