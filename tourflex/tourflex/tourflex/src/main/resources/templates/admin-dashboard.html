@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin - TOURFLEX')}"></head>
+<style>
+    .tab-panel{display:none;animation:fadeUp .35s ease}.tab-panel.active{display:block}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .sidebar-link{display:flex;align-items:center;gap:12px;padding:11px 16px;border-radius:12px;color:#64748b;font-size:14px;font-weight:500;transition:all .2s;cursor:pointer}
+    .sidebar-link:hover{background:#f1f5f9;color:#334155}.sidebar-link.active{background:#002155;color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(0,33,85,.2)}
+    .stat-card{background:#fff;border-radius:16px;padding:24px;border:1px solid #edf0f4;transition:all .3s}
+    .stat-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);transform:translateY(-2px)}
+    .data-table{width:100%;border-collapse:collapse}
+    .data-table th{padding:14px 20px;text-align:left;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid #edf0f4;background:#f8fafc}
+    .data-table td{padding:14px 20px;border-bottom:1px solid #f1f5f9;color:#475569;font-size:14px;font-weight:500}
+    .data-table tr:hover td{background:#f8fafc}
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+    .badge-green{background:#ecfdf5;color:#059669}.badge-yellow{background:#fffbeb;color:#d97706}
+    .badge-red{background:#fef2f2;color:#dc2626}.badge-blue{background:#eff6ff;color:#3b82f6}
+    .btn-sm{display:inline-flex;align-items:center;gap:4px;padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;transition:all .2s;cursor:pointer;text-decoration:none}
+    .btn-primary{background:#002155;color:#fff;box-shadow:0 2px 6px rgba(0,33,85,.15)}.btn-primary:hover{background:#003d99;box-shadow:0 4px 12px rgba(0,33,85,.25)}
+    .btn-danger{color:#ef4444;border-radius:8px;padding:6px}.btn-danger:hover{color:#dc2626;background:#fef2f2}
+    .icon-box{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center}
+    .section-header{display:flex;align-items:center;gap:14px;padding:20px 24px;border-radius:16px;margin-bottom:20px}
+    .section-header h2{font-size:18px;font-weight:700;margin:0}.section-header p{font-size:13px;margin:0;opacity:.7}
+</style>
+<body class="bg-[#f8f9fb] min-h-screen flex" style="font-family:'Plus Jakarta Sans',sans-serif">
+
+<!-- Sidebar -->
+<aside class="hidden lg:flex flex-col w-[250px] min-h-screen bg-white border-r border-[#edf0f4] fixed left-0 top-0 z-40">
+    <div class="px-6 pt-8 pb-6">
+        <a th:href="@{/admin/dashboard}" class="flex items-center gap-3 no-underline">
+            <div class="w-10 h-10 rounded-xl bg-[#002155] flex items-center justify-center">
+                <span class="material-symbols-outlined text-white text-[20px]">explore</span>
+            </div>
+            <div>
+                <div class="text-[17px] font-bold text-[#002155] leading-none tracking-tight">TOURFLEX</div>
+                <div class="text-[10px] font-medium text-[#adb5c4] uppercase tracking-[.15em] mt-1">Admin</div>
+            </div>
+        </a>
+    </div>
+    <nav class="flex-1 px-3 overflow-y-auto space-y-1">
+        <div onclick="switchTab('dashboard')" class="sidebar-link active" id="nav-dashboard">
+            <span class="material-symbols-outlined text-[20px]">grid_view</span> Dashboard</div>
+        <div onclick="switchTab('users')" class="sidebar-link" id="nav-users">
+            <span class="material-symbols-outlined text-[20px]">group</span> Users</div>
+        <div onclick="switchTab('packages')" class="sidebar-link" id="nav-packages">
+            <span class="material-symbols-outlined text-[20px]">tour</span> Packages</div>
+        <div onclick="switchTab('hotels')" class="sidebar-link" id="nav-hotels">
+            <span class="material-symbols-outlined text-[20px]">hotel</span> Hotels</div>
+        <div onclick="switchTab('bookings')" class="sidebar-link" id="nav-bookings">
+            <span class="material-symbols-outlined text-[20px]">book_online</span> Bookings</div>
+        <div onclick="switchTab('payments')" class="sidebar-link" id="nav-payments">
+            <span class="material-symbols-outlined text-[20px]">payments</span> Payments</div>
+        <div onclick="switchTab('refunds')" class="sidebar-link" id="nav-refunds">
+            <span class="material-symbols-outlined text-[20px]">sync_alt</span> Refunds</div>
+        <div onclick="switchTab('reviews')" class="sidebar-link" id="nav-reviews">
+            <span class="material-symbols-outlined text-[20px]">star</span> Reviews</div>
+    </nav>
+    <div class="px-3 py-5 border-t border-[#edf0f4] space-y-1">
+        <a th:href="@{/admin/logout}" class="sidebar-link no-underline !text-[#ef4444] hover:!bg-red-50"><span class="material-symbols-outlined text-[20px]">logout</span> Sign Out</a>
+    </div>
+</aside>
+
+<!-- Main -->
+<div class="flex-1 lg:ml-[250px] min-h-screen flex flex-col">
+    <header class="bg-white/80 backdrop-blur-md border-b border-[#edf0f4] sticky top-0 z-30 px-8 lg:px-10 py-5 flex items-center justify-between">
+        <h1 class="text-[20px] font-semibold text-[#0f172a]" id="page-title">Dashboard</h1>
+    </header>
+
+    <main class="flex-1 px-8 lg:px-10 py-8">
+
+        <!-- ==================== DASHBOARD TAB ==================== -->
+        <div class="tab-panel active" id="tab-dashboard">
+            <div class="bg-gradient-to-r from-[#002155] via-[#003a8c] to-[#0047ab] rounded-2xl p-8 mb-8 relative overflow-hidden">
+                <div class="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/3 translate-x-1/4"></div>
+                <div class="absolute right-24 bottom-0 w-32 h-32 bg-white/[0.03] rounded-full translate-y-1/2"></div>
+                <div class="absolute right-8 top-8 opacity-[0.06]"><span class="material-symbols-outlined text-white" style="font-size:120px">analytics</span></div>
+                <h2 class="text-[28px] font-bold text-white mb-2 relative z-10">Welcome back, Admin</h2>
+                <p class="text-[15px] text-white/50 font-normal relative z-10">Here's a snapshot of your platform today.</p>
+            </div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+                <div class="stat-card">
+                    <div class="icon-box bg-[#eff6ff] text-[#3b82f6] mb-4"><span class="material-symbols-outlined text-[22px]">account_balance_wallet</span></div>
+                    <p class="text-[12px] text-[#94a3b8] font-semibold uppercase tracking-wider mb-1.5">Revenue</p>
+                    <p class="text-[28px] font-bold text-[#0f172a] leading-none" th:text="'Rs. ' + ${#numbers.formatDecimal(totalRevenue, 1, 'COMMA', 0, 'POINT')}">Rs. 0</p>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-box bg-[#faf5ff] text-[#a855f7] mb-4"><span class="material-symbols-outlined text-[22px]">book_online</span></div>
+                    <p class="text-[12px] text-[#94a3b8] font-semibold uppercase tracking-wider mb-1.5">Bookings</p>
+                    <p class="text-[28px] font-bold text-[#0f172a] leading-none" th:text="${totalBookings}">0</p>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-box bg-[#fff7ed] text-[#f97316] mb-4"><span class="material-symbols-outlined text-[22px]">group</span></div>
+                    <p class="text-[12px] text-[#94a3b8] font-semibold uppercase tracking-wider mb-1.5">Users</p>
+                    <p class="text-[28px] font-bold text-[#0f172a] leading-none" th:text="${totalUsers}">0</p>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-box bg-[#ecfdf5] text-[#10b981] mb-4"><span class="material-symbols-outlined text-[22px]">tour</span></div>
+                    <p class="text-[12px] text-[#94a3b8] font-semibold uppercase tracking-wider mb-1.5">Packages</p>
+                    <p class="text-[28px] font-bold text-[#0f172a] leading-none" th:text="${totalPackages}">0</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div class="bg-white rounded-2xl border border-[#edf0f4] p-6">
+                    <h3 class="text-[17px] font-bold text-[#0f172a] mb-5">Quick Navigate</h3>
+                    <div class="space-y-2">
+                        <div onclick="switchTab('packages')" class="flex items-center justify-between px-4 py-3.5 rounded-xl hover:bg-[#f8fafc] border border-transparent hover:border-[#edf0f4] cursor-pointer group transition-all">
+                            <div class="flex items-center gap-3"><div class="icon-box bg-[#eff6ff] text-[#3b82f6] !w-9 !h-9 !rounded-lg"><span class="material-symbols-outlined text-[18px]">tour</span></div>
+                                <div><p class="text-[14px] font-medium text-[#0f172a]">Tour Packages</p><p class="text-[12px] text-[#94a3b8]">Manage itineraries</p></div></div>
+                            <span class="material-symbols-outlined text-[18px] text-[#cbd5e1] group-hover:text-[#3b82f6]">chevron_right</span>
+                        </div>
+                        <div onclick="switchTab('bookings')" class="flex items-center justify-between px-4 py-3.5 rounded-xl hover:bg-[#f8fafc] border border-transparent hover:border-[#edf0f4] cursor-pointer group transition-all">
+                            <div class="flex items-center gap-3"><div class="icon-box bg-[#faf5ff] text-[#a855f7] !w-9 !h-9 !rounded-lg"><span class="material-symbols-outlined text-[18px]">book_online</span></div>
+                                <div><p class="text-[14px] font-medium text-[#0f172a]">Bookings</p><p class="text-[12px] text-[#94a3b8]">View all reservations</p></div></div>
+                            <span class="material-symbols-outlined text-[18px] text-[#cbd5e1] group-hover:text-[#a855f7]">chevron_right</span>
+                        </div>
+                        <div onclick="switchTab('users')" class="flex items-center justify-between px-4 py-3.5 rounded-xl hover:bg-[#f8fafc] border border-transparent hover:border-[#edf0f4] cursor-pointer group transition-all">
+                            <div class="flex items-center gap-3"><div class="icon-box bg-[#fff7ed] text-[#f97316] !w-9 !h-9 !rounded-lg"><span class="material-symbols-outlined text-[18px]">group</span></div>
+                                <div><p class="text-[14px] font-medium text-[#0f172a]">Users</p><p class="text-[12px] text-[#94a3b8]">Registered accounts</p></div></div>
+                            <span class="material-symbols-outlined text-[18px] text-[#cbd5e1] group-hover:text-[#f97316]">chevron_right</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-[#edf0f4] p-6">
+                    <h3 class="text-[17px] font-bold text-[#0f172a] mb-5">Platform Overview</h3>
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between py-3 border-b border-[#f1f5f9]"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-[#94a3b8]">hotel</span><span class="text-[14px] font-medium text-[#475569]">Hotels</span></div><span class="text-[18px] font-semibold text-[#0f172a]" th:text="${totalHotels}">0</span></div>
+                        <div class="flex items-center justify-between py-3 border-b border-[#f1f5f9]"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-[#94a3b8]">payments</span><span class="text-[14px] font-medium text-[#475569]">Payments</span></div><span class="text-[18px] font-semibold text-[#0f172a]" th:text="${totalPayments}">0</span></div>
+                        <div class="flex items-center justify-between py-3 border-b border-[#f1f5f9]"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-[#94a3b8]">sync_alt</span><span class="text-[14px] font-medium text-[#475569]">Refunds</span></div><span class="text-[18px] font-semibold text-[#0f172a]" th:text="${totalRefunds}">0</span></div>
+                        <div class="flex items-center justify-between py-3"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-[#94a3b8]">star</span><span class="text-[14px] font-medium text-[#475569]">Reviews</span></div><span class="text-[18px] font-semibold text-[#0f172a]" th:text="${totalReviews}">0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== USERS TAB ==================== -->
+        <div class="tab-panel" id="tab-users">
+            <div class="section-header bg-gradient-to-r from-[#faf5ff] to-[#f5f3ff]">
+                <div class="icon-box bg-[#a855f7] text-white !w-10 !h-10"><span class="material-symbols-outlined text-[20px]">group</span></div>
+                <div><h2 class="!text-[#581c87]">Users</h2><p class="!text-[#7c3aed]" th:text="${users != null ? users.size() : 0} + ' registered accounts'">0</p></div>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#edf0f4] overflow-hidden">
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Address</th><th></th></tr></thead>
+                    <tbody>
+                    <!-- Fix: Added iterStat for sequential numbers -->
+                    <tr th:each="u, iterStat : ${users}">
+                        <td th:text="${iterStat.count}" class="!text-[#94a3b8]"></td>
+                        <td><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-[#eff6ff] text-[#3b82f6] flex items-center justify-center text-[11px] font-bold" th:text="${#strings.substring(u.name,0,1)}">U</div><span class="font-semibold text-[#0f172a]" th:text="${u.name}"></span></div></td>
+                        <td th:text="${u.email}"></td><td th:text="${u.phone}"></td>
+                        <td class="max-w-[160px] truncate" th:text="${u.address}"></td>
+                        <td class="text-center"><a th:href="@{'/admin/users/delete/' + ${u.id}}" class="btn-danger btn-delete" data-type="User"><span class="material-symbols-outlined text-[18px]">delete</span></a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== PACKAGES TAB ==================== -->
+        <div class="tab-panel" id="tab-packages">
+            <div class="section-header bg-gradient-to-r from-[#eff6ff] to-[#eef2ff] justify-between">
+                <div class="flex items-center gap-3.5">
+                    <div class="icon-box bg-[#3b82f6] text-white !w-10 !h-10"><span class="material-symbols-outlined text-[20px]">tour</span></div>
+                    <div><h2 class="!text-[#1e3a8a]">Packages</h2><p class="!text-[#3b82f6]" th:text="${packages != null ? packages.size() : 0} + ' tour packages'">0</p></div>
+                </div>
+                <a th:href="@{/packages/add-page}" class="btn-sm btn-primary no-underline"><span class="material-symbols-outlined text-[16px]">add</span> Add Package</a>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#edf0f4] overflow-hidden"><div class="overflow-x-auto">
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Name</th><th>Category</th><th>Location</th><th>Days</th><th>Price</th><th></th></tr></thead>
+                    <tbody>
+                    <!-- Fix: Added iterStat for sequential numbers -->
+                    <tr th:each="pkg, iterStat : ${packages}">
+                        <td th:text="${iterStat.count}" class="!text-[#94a3b8]"></td>
+                        <td class="font-semibold !text-[#0f172a]" th:text="${pkg.name}"></td>
+                        <td><span class="badge badge-blue" th:text="${pkg.category}"></span></td>
+                        <td th:text="${pkg.location}"></td>
+                        <td th:text="${pkg.days} + 'd'"></td>
+                        <td class="font-semibold !text-[#0f172a]" th:text="'Rs. ' + ${pkg.price}"></td>
+                        <td><div class="flex items-center gap-1">
+                            <a th:href="@{'/packages/edit/' + ${pkg.id}}" class="btn-sm !text-[#3b82f6] hover:bg-[#eff6ff]"><span class="material-symbols-outlined text-[16px]">edit</span></a>
+                            <a th:href="@{'/packages/delete/' + ${pkg.id}}" class="btn-danger btn-delete" data-type="Package"><span class="material-symbols-outlined text-[18px]">delete</span></a>
+                        </div></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div></div>
+        </div>
+
+        <!-- ==================== HOTELS TAB ==================== -->
+        <div class="tab-panel" id="tab-hotels">
+            <div class="section-header bg-gradient-to-r from-[#fffbeb] to-[#fef3c7] justify-between">
+                <div class="flex items-center gap-3.5">
+                    <div class="icon-box bg-[#f59e0b] text-white !w-10 !h-10"><span class="material-symbols-outlined text-[20px]">hotel</span></div>
+                    <div><h2 class="!text-[#78350f]">Hotels</h2><p class="!text-[#d97706]" th:text="${hotels != null ? hotels.size() : 0} + ' partner hotels'">0</p></div>
+                </div>
+                <a th:href="@{/hotel/add-page}" class="btn-sm btn-primary no-underline"><span class="material-symbols-outlined text-[16px]">add</span> Add Hotel</a>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#edf0f4] overflow-hidden">
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Hotel Name</th><th>Location</th><th>Star Rating</th><th></th></tr></thead>
+                    <tbody>
+                    <!-- Fix: Added iterStat for sequential numbers -->
+                    <tr th:each="h, iterStat : ${hotels}">
+                        <td th:text="${iterStat.count}" class="!text-[#94a3b8]"></td>
+                        <td class="font-semibold !text-[#0f172a]"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-[#94a3b8]">hotel</span><span th:text="${h.hotelName}"></span></div></td>
+                        <td th:text="${h.location}"></td>
+                        <td><span class="text-[#f59e0b] font-semibold" th:text="${h.starRating}"></span></td>
+                        <td class="text-center"><a th:href="@{'/hotel/delete/' + ${h.id}}" class="btn-danger btn-delete" data-type="Hotel"><span class="material-symbols-outlined text-[18px]">delete</span></a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== BOOKINGS TAB ==================== -->
+        <div class="tab-panel" id="tab-bookings">
+            <div class="section-header bg-gradient-to-r from-[#eef2ff] to-[#e0e7ff]">
+                <div class="icon-box bg-[#6366f1] text-white !w-10 !h-10"><span class="material-symbols-outlined text-[20px]">book_online</span></div>
+                <div><h2 class="!text-[#312e81]">Bookings</h2><p class="!text-[#6366f1]" th:text="${bookings != null ? bookings.size() : 0} + ' reservations'">0</p></div>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#edf0f4] overflow-hidden"><div class="overflow-x-auto">
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Customer</th><th>Package</th><th>Location</th><th>Guests</th><th>Total</th><th>Status</th><th></th></tr></thead>
+                    <tbody>
+                    <!-- CRITICAL FIX: Added iterStat for sequential numbers 1, 2, 3... -->
+                    <tr th:each="b, iterStat : ${bookings}">
+                        <td th:text="${iterStat.count}" class="!text-[#94a3b8]"></td>
+                        <td><div class="font-semibold !text-[#0f172a]" th:text="${b.customerName}"></div><div class="text-[12px] text-[#94a3b8]" th:text="${b.customerEmail}"></div></td>
+                        <td class="font-semibold !text-[#3b82f6]" th:text="${b.packageName}"></td>
+                        <td th:text="${b.location}"></td>
+                        <td class="text-center" th:text="${b.numberOfPeople}"></td>
+                        <td class="font-semibold !text-[#0f172a]" th:text="'Rs. ' + ${b.totalPrice}"></td>
+                        <td><span class="badge" th:classappend="${b.bookingStatus == 'Paid' ? 'badge-green' : (b.bookingStatus == 'Pending' ? 'badge-yellow' : 'badge-blue')}" th:text="${b.bookingStatus}"></span></td>
+                        <td class="text-center">
+                            <!-- Delete remains b.id to keep functionality working -->
+                            <a th:href="@{'/booking/delete/' + ${b.id}}" class="btn-danger btn-delete" data-type="Booking"><span class="material-symbols-outlined text-[18px]">delete</span></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div></div>
+        </div>
+
+        <!-- ==================== PAYMENTS TAB ==================== -->
+        <div class="tab-panel" id="tab-payments">
+            <div class="section-header bg-gradient-to-r from-[#ecfdf5] to-[#d1fae5]">
+                <div class="icon-box bg-[#10b981] text-white !w-10 !h-10"><span class="material-symbols-outlined text-[20px]">payments</span></div>
+                <div><h2 class="!text-[#064e3b]">Payments</h2><p class="!text-[#10b981]" th:text="${payments != null ? payments.size() : 0} + ' transactions'">0</p></div>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#edf0f4] overflow-hidden">
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Customer</th><th>Email</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody>
+                    <!-- Fix: Added iterStat for sequential numbers -->
+                    <tr th:each="p, iterStat : ${payments}">
+                        <td th:text="${iterStat.count}" class="!text-[#94a3b8]"></td>
+                        <td class="font-semibold !text-[#0f172a]" th:text="${p.customerName}"></td>
+                        <td th:text="${p.customerEmail}"></td>
+                        <td class="font-semibold !text-[#0f172a]" th:text="'Rs. ' + ${p.amount}"></td>
+                        <td><span class="badge" th:classappend="${p.paymentStatus == 'Success' ? 'badge-green' : 'badge-yellow'}" th:text="${p.paymentStatus}"></span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== REFUNDS TAB ==================== -->
+        <div class="tab-panel" id="tab-refunds">
+            <div class="section-header bg-gradient-to-r from-[#fff1f2] to-[#ffe4e6]">
+                <div class="icon-box bg-[#f43f5e] text-white !w-10 !h-10"><span class="material-symbols-outlined text-[20px]">sync_alt</span></div>
+                <div><h2 class="!text-[#881337]">Refund Requests</h2><p class="!text-[#f43f5e]" th:text="${refunds != null ? refunds.size() : 0} + ' requests'">0</p></div>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#edf0f4] overflow-hidden"><div class="overflow-x-auto">
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Customer</th><th>Package</th><th>Bank</th><th>Account</th><th>Status</th><th></th></tr></thead>
+                    <tbody>
+                    <!-- Fix: Added iterStat for sequential numbers -->
+                    <tr th:each="r, iterStat : ${refunds}">
+                        <td th:text="${iterStat.count}" class="!text-[#94a3b8]"></td>
+                        <td><div class="font-semibold !text-[#0f172a]" th:text="${r.customerName}"></div><div class="text-[12px] text-[#94a3b8]" th:text="${r.customerEmail}"></div></td>
+                        <td class="font-semibold !text-[#3b82f6]" th:text="${r.packageName}"></td>
+                        <td th:text="${r.bankName}"></td>
+                        <td><div th:text="${r.accountNumber}"></div><div class="text-[12px] text-[#94a3b8]" th:text="${r.accountHolderName}"></div></td>
+                        <td><span class="badge" th:classappend="${r.refundStatus == 'Completed' ? 'badge-green' : 'badge-yellow'}" th:text="${r.refundStatus}"></span></td>
+                        <td class="text-center">
+                            <span th:if="${r.refundStatus == 'Completed'}" class="text-[12px] font-semibold text-[#059669]">Done</span>
+                            <a th:if="${r.refundStatus != 'Completed'}" th:href="@{'/refund/complete/' + ${r.id}}" class="btn-sm btn-primary !text-[12px] no-underline btn-action" data-title="Mark Refund as Done?">Mark Done</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div></div>
+        </div>
+
+        <!-- ==================== REVIEWS TAB ==================== -->
+        <div class="tab-panel" id="tab-reviews">
+            <div class="section-header bg-gradient-to-r from-[#fdf4ff] to-[#fae8ff]">
+                <div class="icon-box bg-[#d946ef] text-white !w-10 !h-10"><span class="material-symbols-outlined text-[20px]">star</span></div>
+                <div><h2 class="!text-[#701a75]">Reviews</h2><p class="!text-[#d946ef]" th:text="${reviews != null ? reviews.size() : 0} + ' reviews'">0</p></div>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#edf0f4] overflow-hidden"><div class="overflow-x-auto">
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Customer</th><th>Package</th><th>Rating</th><th>Comment</th><th>Date</th><th></th></tr></thead>
+                    <tbody>
+                    <!-- Fix: Added iterStat for sequential numbers -->
+                    <tr th:each="rev, iterStat : ${reviews}">
+                        <td th:text="${iterStat.count}" class="!text-[#94a3b8]"></td>
+                        <td><div class="font-semibold !text-[#0f172a]" th:text="${rev.customerName}"></div><div class="text-[12px] text-[#94a3b8]" th:text="${rev.customerEmail}"></div></td>
+                        <td class="font-semibold !text-[#3b82f6]" th:text="${rev.packageName}"></td>
+                        <td>
+                            <div class="flex text-[#f59e0b] text-[14px]">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}" class="material-symbols-outlined" th:text="${i <= rev.rating ? 'star' : 'star_border'}">star</span>
+                            </div>
+                        </td>
+                        <td class="max-w-[200px] truncate" th:text="${rev.comment}"></td>
+                        <td class="text-[13px] text-[#94a3b8]" th:text="${rev.reviewDate}"></td>
+                        <td class="text-center"><a th:href="@{'/admin/reviews/delete/' + ${rev.id}}" class="btn-danger btn-delete" data-type="Review"><span class="material-symbols-outlined text-[18px]">delete</span></a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div></div>
+        </div>
+
+    </main>
+</div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const titles={dashboard:'Dashboard',users:'Users',packages:'Packages',hotels:'Hotels',bookings:'Bookings',payments:'Payments',refunds:'Refunds',reviews:'Reviews'};
+    function switchTab(name){
+        document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
+        document.getElementById('tab-'+name).classList.add('active');
+        document.getElementById('nav-'+name).classList.add('active');
+        document.getElementById('page-title').textContent=titles[name]||name;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab && document.getElementById('tab-' + tab)) {
+            switchTab(tab);
+        }
+
+        // SweetAlert for Deletions
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                const type = this.getAttribute('data-type');
+
+                Swal.fire({
+                    title: 'Delete ' + type + '?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = href;
+                    }
+                });
+            });
+        });
+
+        // SweetAlert for Actions (Mark Done)
+        document.querySelectorAll('.btn-action').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                const title = this.getAttribute('data-title');
+
+                Swal.fire({
+                    title: title,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#059669',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, proceed!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = href;
+                    }
+                });
+            });
+        });
+    });
+</script>
+</body>
+</html>

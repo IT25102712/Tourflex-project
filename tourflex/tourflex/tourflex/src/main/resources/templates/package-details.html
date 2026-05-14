@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Package Details - TOURFLEX')}"></head>
+
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="bg-primary pt-24 pb-32">
+    <!-- Background Header space -->
+</div>
+
+<main class="flex-1 max-w-[1000px] mx-auto px-margin-mobile w-full -mt-24 mb-16 relative z-10">
+    <div class="bg-white rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] overflow-hidden border border-outline-variant/20">
+        
+        <div class="h-[400px] w-full relative">
+            <img th:if="${pkg.imageName != null and !#strings.isEmpty(pkg.imageName)}"
+                 th:src="@{'/images/' + ${pkg.imageName}}" alt="Package Image" class="w-full h-full object-cover">
+
+            <img th:if="${(pkg.imageName == null or #strings.isEmpty(pkg.imageName)) and pkg.location == 'Ella'}"
+                 th:src="@{/images/ella.jpg}" alt="Ella" class="w-full h-full object-cover">
+
+            <img th:if="${(pkg.imageName == null or #strings.isEmpty(pkg.imageName)) and pkg.location == 'Yala'}"
+                 th:src="@{/images/yala.jpg}" alt="Yala" class="w-full h-full object-cover">
+
+            <img th:if="${(pkg.imageName == null or #strings.isEmpty(pkg.imageName)) and pkg.location == 'Bentota'}"
+                 th:src="@{/images/bentota.jpg}" alt="Bentota" class="w-full h-full object-cover">
+
+            <img th:if="${(pkg.imageName == null or #strings.isEmpty(pkg.imageName)) and pkg.location == 'Sigiriya'}"
+                 th:src="@{/images/sigiriya.jpg}" alt="Sigiriya" class="w-full h-full object-cover">
+                 
+            <img th:if="${(pkg.imageName == null or #strings.isEmpty(pkg.imageName)) and pkg.location != 'Ella' and pkg.location != 'Yala' and pkg.location != 'Bentota' and pkg.location != 'Sigiriya'}"
+                 src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover">
+                 
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            
+            <div class="absolute bottom-6 left-8 right-8 flex justify-between items-end">
+                <div>
+                    <h1 class="text-display-lg-mobile text-white font-bold mb-2 shadow-sm" th:text="${pkg.name}">Package Title</h1>
+                    <div class="flex items-center gap-3 text-white/90 font-label-md">
+                        <span class="flex items-center gap-1 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full"><span class="material-symbols-outlined text-[16px]">location_on</span> <span th:text="${pkg.location}">Location</span></span>
+                        <span class="flex items-center gap-1 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full"><span class="material-symbols-outlined text-[16px]">schedule</span> <span th:text="${pkg.days} + ' Days'">0 Days</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8 md:p-12">
+            
+            <div class="flex flex-col md:flex-row gap-12">
+                <!-- Left Column: Details -->
+                <div class="flex-1 space-y-8">
+                    
+                    <div>
+                        <h2 class="text-headline-sm text-primary mb-4 border-b border-outline-variant/30 pb-2">Tour Overview</h2>
+                        <p class="text-body-lg text-on-surface-variant leading-relaxed" th:text="${pkg.description}">Description text goes here.</p>
+                    </div>
+
+                    <div>
+                        <h2 class="text-headline-sm text-primary mb-4 border-b border-outline-variant/30 pb-2">Highlights</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="flex items-start gap-3 bg-surface-container-lowest border border-outline-variant/20 p-4 rounded-xl">
+                                <span class="material-symbols-outlined text-secondary-container">category</span>
+                                <div>
+                                    <div class="text-[12px] uppercase text-outline font-bold tracking-wider">Category</div>
+                                    <div class="font-semibold text-on-surface" th:text="${pkg.category}">Category</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-3 bg-surface-container-lowest border border-outline-variant/20 p-4 rounded-xl">
+                                <span class="material-symbols-outlined text-secondary-container">tour</span>
+                                <div>
+                                    <div class="text-[12px] uppercase text-outline font-bold tracking-wider">Type</div>
+                                    <div class="font-semibold text-on-surface" th:text="${pkg.type}">Type</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3 bg-surface-container-lowest border border-outline-variant/20 p-4 rounded-xl">
+                                <span class="material-symbols-outlined text-secondary-container">group</span>
+                                <div>
+                                    <div class="text-[12px] uppercase text-outline font-bold tracking-wider">Max People</div>
+                                    <div class="font-semibold text-on-surface" th:text="${pkg.maxPeople}">0</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-3 bg-surface-container-lowest border border-outline-variant/20 p-4 rounded-xl">
+                                <span class="material-symbols-outlined text-secondary-container">hotel</span>
+                                <div>
+                                    <div class="text-[12px] uppercase text-outline font-bold tracking-wider">Hotel</div>
+                                    <div class="font-semibold text-on-surface" th:text="${pkg.hotelName}">Hotel Name</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3 bg-surface-container-lowest border border-outline-variant/20 p-4 rounded-xl">
+                                <span class="material-symbols-outlined text-secondary-container">directions_car</span>
+                                <div>
+                                    <div class="text-[12px] uppercase text-outline font-bold tracking-wider">Transport</div>
+                                    <div class="font-semibold text-on-surface" th:text="${pkg.transportMethods}">Transport</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3 bg-surface-container-lowest border border-outline-variant/20 p-4 rounded-xl">
+                                <span class="material-symbols-outlined text-secondary-container">restaurant</span>
+                                <div>
+                                    <div class="text-[12px] uppercase text-outline font-bold tracking-wider">Meals</div>
+                                    <div class="font-semibold text-on-surface" th:text="${pkg.meals}">Meals</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Pricing & Booking -->
+                <div class="w-full md:w-80 shrink-0">
+                    <div class="bg-surface-container-lowest border border-outline-variant/20 p-6 rounded-2xl shadow-sm sticky top-32">
+                        <div class="text-sm text-on-surface-variant font-bold uppercase tracking-wider mb-1">Total Price</div>
+                        <div class="text-4xl font-extrabold text-primary mb-6" th:text="'LKR ' + ${pkg.price}">Rs. 0</div>
+                        
+                        <ul class="space-y-3 mb-6 border-t border-outline-variant/20 pt-6">
+                            <li class="flex items-center gap-2 text-sm text-on-surface-variant">
+                                <span class="material-symbols-outlined text-secondary-container text-[18px]">check_circle</span>
+                                Professional Guide Included
+                            </li>
+                            <li class="flex items-center gap-2 text-sm text-on-surface-variant">
+                                <span class="material-symbols-outlined text-secondary-container text-[18px]">check_circle</span>
+                                Fully Customizable
+                            </li>
+                            <li class="flex items-center gap-2 text-sm text-on-surface-variant">
+                                <span class="material-symbols-outlined text-secondary-container text-[18px]">check_circle</span>
+                                Secure Payment
+                            </li>
+                        </ul>
+                        
+                        <a th:href="@{'/booking/book/' + ${pkg.id}}" class="block w-full bg-secondary-container text-on-secondary-fixed text-center py-4 rounded-xl font-bold text-label-md hover:bg-secondary-fixed transition-colors shadow-md group">
+                            Book Now <span class="material-symbols-outlined text-sm align-middle ml-1 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

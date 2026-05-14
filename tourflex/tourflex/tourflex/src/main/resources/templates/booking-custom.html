@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Book Custom Package - TOURFLEX')}"></head>
+
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="bg-primary pt-32 pb-16 px-margin-mobile">
+    <div class="max-w-[1280px] mx-auto text-center">
+        <h1 class="text-display-lg-mobile font-display-lg md:text-display-lg text-white mb-4">Confirm Custom Booking</h1>
+        <p class="text-body-lg text-white/80">You're one step away from your personalized journey.</p>
+    </div>
+</div>
+
+<main class="flex-1 max-w-[1280px] mx-auto px-margin-desktop py-12 w-full flex items-center justify-center">
+    <div class="w-full max-w-2xl bg-white p-8 md:p-12 rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20">
+
+        <div class="bg-surface-container-low border border-outline-variant/30 rounded-2xl p-6 mb-8 flex flex-col gap-4 shadow-sm">
+            <div class="flex justify-between items-start border-b border-outline-variant/20 pb-4">
+                <div>
+                    <div class="text-label-md text-outline uppercase tracking-widest font-bold">Destination</div>
+                    <div class="text-headline-sm text-primary font-bold" th:text="${customPkg.location}">Location</div>
+                </div>
+                <div class="text-right shrink-0">
+                    <div class="text-label-md text-outline uppercase tracking-widest font-bold mb-1">Total Price</div>
+                    <div class="text-2xl font-extrabold text-secondary-container" th:text="'Rs. ' + ${customPkg.totalPrice}">Rs. 0</div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+                <div>
+                    <div class="text-[11px] text-outline uppercase tracking-wider font-bold mb-1">Days</div>
+                    <div class="font-semibold text-on-surface text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">schedule</span> <span th:text="${customPkg.numberOfDays}"></span></div>
+                </div>
+                <div>
+                    <div class="text-[11px] text-outline uppercase tracking-wider font-bold mb-1">Guests</div>
+                    <div class="font-semibold text-on-surface text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">group</span> <span th:text="${customPkg.numberOfPeople}"></span></div>
+                </div>
+                <div>
+                    <div class="text-[11px] text-outline uppercase tracking-wider font-bold mb-1">Hotel</div>
+                    <div class="font-semibold text-on-surface text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">hotel</span> <span th:text="${customPkg.hotelName}" class="truncate"></span></div>
+                </div>
+                <div>
+                    <div class="text-[11px] text-outline uppercase tracking-wider font-bold mb-1">Transport</div>
+                    <div class="font-semibold text-on-surface text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">directions_car</span> <span th:text="${customPkg.transportType}"></span></div>
+                </div>
+            </div>
+        </div>
+
+        <form action="/booking/save" method="post" class="flex flex-col gap-5">
+            <input type="hidden" name="customerName" th:value="${customPkg.customerName}">
+            <input type="hidden" name="customerEmail" th:value="${customPkg.customerEmail}">
+            <input type="hidden" name="numberOfPeople" th:value="${customPkg.numberOfPeople}">
+            <input type="hidden" name="packageName" th:value="${'Custom Package - ' + customPkg.location}">
+            <input type="hidden" name="location" th:value="${customPkg.location}">
+            <input type="hidden" name="totalPrice" th:value="${customPkg.totalPrice}">
+            <input type="hidden" name="customPackageId" th:value="${customPkg.id}">
+
+            <div>
+                <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">When would you like to start?</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">calendar_month</span>
+                    <input type="date" name="bookingDate" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" required>
+                </div>
+            </div>
+
+            <div class="mt-6 flex flex-col sm:flex-row gap-4">
+                <a th:href="@{/custom-package/my}" class="w-full sm:w-1/3 bg-surface-container-low text-on-surface-variant py-4 rounded-xl font-label-md hover:bg-surface-container-high transition-all text-center border border-outline-variant/30">
+                    Cancel
+                </a>
+                <button type="submit" class="w-full sm:w-2/3 bg-primary text-on-primary py-4 rounded-xl font-label-md hover:bg-primary-container transition-all shadow-md flex justify-center items-center gap-2">
+                    <span class="material-symbols-outlined text-[20px]">check_circle</span> Confirm Booking
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var dateInput = document.querySelector('input[name="bookingDate"]');
+        if (dateInput) {
+            var today = new Date();
+            // Add 3 days to current date to restrict booking for today + 48 hours
+            today.setDate(today.getDate() + 3);
+            var yyyy = today.getFullYear();
+            var mm = String(today.getMonth() + 1).padStart(2, '0');
+            var dd = String(today.getDate()).padStart(2, '0');
+            dateInput.min = yyyy + '-' + mm + '-' + dd;
+        }
+    });
+</script>
+
+</body>
+</html>

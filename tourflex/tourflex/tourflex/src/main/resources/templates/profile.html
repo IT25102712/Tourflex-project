@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Profile - TOURFLEX')}"></head>
+
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<!-- Hero Banner -->
+<div class="bg-primary pt-32 pb-24 px-margin-mobile relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary via-primary to-primary-container opacity-90"></div>
+    <div class="max-w-[1280px] mx-auto relative z-10">
+        <div class="flex flex-col md:flex-row items-center gap-8">
+            <!-- Avatar -->
+            <div class="relative">
+                <div class="w-28 h-28 rounded-full border-4 border-white/30 bg-surface-container-high flex items-center justify-center overflow-hidden shadow-xl">
+                    <span th:if="${session.user.image == null}" th:text="${#strings.substring(session.user.name, 0, 1)}" class="text-4xl font-bold text-primary">S</span>
+                    <img th:if="${session.user.image != null}" th:src="@{'/user/display/' + ${session.user.id}}" class="w-full h-full object-cover">
+                </div>
+                <label for="imageUpload" class="absolute bottom-0 right-0 w-9 h-9 bg-white rounded-full flex items-center justify-center text-primary shadow-md cursor-pointer hover:bg-surface-container-low transition-colors border-2 border-primary/20">
+                    <span class="material-symbols-outlined text-[16px]">photo_camera</span>
+                </label>
+                <form id="uploadForm" th:action="@{/user/upload-image}" method="post" enctype="multipart/form-data">
+                    <input type="file" id="imageUpload" name="profileImage" class="hidden" onchange="this.form.submit()">
+                </form>
+            </div>
+            <!-- User Info -->
+            <div class="text-center md:text-left">
+                <h1 class="text-display-lg-mobile md:text-display-lg text-white font-extrabold mb-1" th:text="${session.user.name}">User</h1>
+                <p class="text-white/70 text-body-md flex items-center justify-center md:justify-start gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">mail</span>
+                    <span th:text="${session.user.email}">email</span>
+                </p>
+                <div class="flex items-center justify-center md:justify-start gap-3 mt-4">
+                    <span class="inline-block bg-white/15 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-sm border border-white/20">Explorer</span>
+                </div>
+            </div>
+            <!-- Stats -->
+            <div class="md:ml-auto flex gap-4">
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 text-center border border-white/15 min-w-[100px]">
+                    <div class="text-2xl font-extrabold text-white" th:text="${totalTrips}">0</div>
+                    <div class="text-[10px] text-white/60 font-bold uppercase tracking-wider mt-1">Trips</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 text-center border border-white/15 min-w-[100px]">
+                    <div class="text-2xl font-extrabold text-white" th:text="'Rs. ' + ${#numbers.formatDecimal(totalSpent, 1, 'COMMA', 0, 'POINT')}">Rs. 0</div>
+                    <div class="text-[10px] text-white/60 font-bold uppercase tracking-wider mt-1">Spent</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs -->
+<div class="sticky top-0 z-20 bg-surface-container-lowest border-b border-outline-variant/30 shadow-sm">
+    <div class="max-w-[1280px] mx-auto flex overflow-x-auto">
+        <button onclick="switchTab('details')" id="tab-details" class="tab-btn active-tab px-6 py-4 text-sm font-bold text-primary border-b-2 border-primary whitespace-nowrap flex items-center gap-2 transition-all">
+            <span class="material-symbols-outlined text-[18px]">person</span> Personal Info
+        </button>
+        <button onclick="switchTab('cards')" id="tab-cards" class="tab-btn px-6 py-4 text-sm font-medium text-on-surface-variant border-b-2 border-transparent whitespace-nowrap flex items-center gap-2 hover:text-primary transition-all">
+            <span class="material-symbols-outlined text-[18px]">credit_card</span> Payment Methods
+        </button>
+        <button onclick="switchTab('bookings')" id="tab-bookings" class="tab-btn px-6 py-4 text-sm font-medium text-on-surface-variant border-b-2 border-transparent whitespace-nowrap flex items-center gap-2 hover:text-primary transition-all">
+            <span class="material-symbols-outlined text-[18px]">book_online</span> Booking History
+        </button>
+        <button onclick="switchTab('reviews')" id="tab-reviews" class="tab-btn px-6 py-4 text-sm font-medium text-on-surface-variant border-b-2 border-transparent whitespace-nowrap flex items-center gap-2 hover:text-primary transition-all">
+            <span class="material-symbols-outlined text-[18px]">star</span> My Reviews
+        </button>
+        <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn px-6 py-4 text-sm font-medium text-on-surface-variant border-b-2 border-transparent whitespace-nowrap flex items-center gap-2 hover:text-primary transition-all">
+            <span class="material-symbols-outlined text-[18px]">settings</span> Account
+        </button>
+    </div>
+</div>
+
+<div class="flex-1 max-w-[1280px] w-full mx-auto py-10 px-margin-mobile">
+
+    <!-- Tab: Personal Info -->
+    <div id="panel-details" class="tab-panel">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Contact Details -->
+            <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-outline-variant/20 p-8">
+                <h2 class="text-headline-sm font-bold text-on-surface mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">badge</span> Contact Details
+                </h2>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4 bg-surface-container-lowest border border-outline-variant/30 p-4 rounded-xl">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined">mail</span>
+                        </div>
+                        <div>
+                            <div class="text-[10px] text-outline font-bold uppercase tracking-widest">Email</div>
+                            <span class="text-on-surface font-semibold text-sm" th:text="${session.user.email}">email</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 bg-surface-container-lowest border border-outline-variant/30 p-4 rounded-xl">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined">call</span>
+                        </div>
+                        <div>
+                            <div class="text-[10px] text-outline font-bold uppercase tracking-widest">Phone</div>
+                            <span class="text-on-surface font-semibold text-sm" th:text="${session.user.phone}">phone</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 bg-surface-container-lowest border border-outline-variant/30 p-4 rounded-xl">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined">location_on</span>
+                        </div>
+                        <div>
+                            <div class="text-[10px] text-outline font-bold uppercase tracking-widest">Address</div>
+                            <span class="text-on-surface font-semibold text-sm" th:text="${session.user.address}">address</span>
+                        </div>
+                    </div>
+                </div>
+                <a th:href="@{/user/edit}" class="mt-6 inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-label-md hover:bg-primary-container transition-all shadow-md">
+                    <span class="material-symbols-outlined text-[18px]">edit</span> Edit Profile
+                </a>
+            </div>
+            <!-- Quick Links -->
+            <div class="space-y-4">
+                <a th:href="@{/booking/my-bookings}" class="flex items-center gap-4 bg-white rounded-2xl p-5 border border-outline-variant/20 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined">luggage</span>
+                    </div>
+                    <div>
+                        <div class="font-bold text-on-surface text-sm">My Bookings</div>
+                        <div class="text-xs text-on-surface-variant">View & manage trips</div>
+                    </div>
+                    <span class="material-symbols-outlined text-outline ml-auto">chevron_right</span>
+                </a>
+                <a th:href="@{/custom-package/my}" class="flex items-center gap-4 bg-white rounded-2xl p-5 border border-outline-variant/20 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-secondary-container text-on-secondary-container flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined">tune</span>
+                    </div>
+                    <div>
+                        <div class="font-bold text-on-surface text-sm">Custom Packages</div>
+                        <div class="text-xs text-on-surface-variant">Your itineraries</div>
+                    </div>
+                    <span class="material-symbols-outlined text-outline ml-auto">chevron_right</span>
+                </a>
+                <a th:href="@{/review/add-page}" class="flex items-center gap-4 bg-white rounded-2xl p-5 border border-outline-variant/20 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-[#FFD8E4] text-[#31111D] flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined">rate_review</span>
+                    </div>
+                    <div>
+                        <div class="font-bold text-on-surface text-sm">Write a Review</div>
+                        <div class="text-xs text-on-surface-variant">Share your experience</div>
+                    </div>
+                    <span class="material-symbols-outlined text-outline ml-auto">chevron_right</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Payment Methods -->
+    <div id="panel-cards" class="tab-panel hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-headline-sm font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary-container">credit_card</span> Saved Payment Methods
+                </h2>
+            </div>
+
+            <div th:if="${savedCards == null or savedCards.isEmpty()}" class="text-center py-12 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 border-dashed">
+                <span class="material-symbols-outlined text-outline text-5xl mb-3">credit_card_off</span>
+                <h3 class="text-headline-sm font-bold text-on-surface mb-2">No saved cards</h3>
+                <p class="text-body-md text-on-surface-variant mb-4">Your saved payment methods will appear here after making a payment.</p>
+            </div>
+
+            <div th:if="${savedCards != null and !savedCards.isEmpty()}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div th:each="card : ${savedCards}" class="relative bg-gradient-to-br from-[#1a1a2e] to-[#16213e] rounded-2xl p-6 text-white shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden group min-h-[180px] flex flex-col justify-between">
+                    <!-- Card pattern -->
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-10 translate-x-10"></div>
+                    <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-8 -translate-x-8"></div>
+                    
+                    <div class="flex justify-between items-start relative z-10">
+                        <div>
+                            <div class="text-[10px] text-white/50 font-bold uppercase tracking-widest mb-1">Card Number</div>
+                            <span class="font-bold tracking-[0.2em] text-lg font-mono" th:text="${card.maskedCardNumber}">**** 1234</span>
+                        </div>
+                        <span class="material-symbols-outlined text-white/30 text-[32px]">credit_score</span>
+                    </div>
+                    <div class="flex justify-between items-end relative z-10">
+                        <div>
+                            <div class="text-[10px] text-white/50 font-bold uppercase tracking-widest">Card Holder</div>
+                            <div class="text-white font-semibold text-sm" th:text="${card.cardHolderName}">Name</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[10px] text-white/50 font-bold uppercase tracking-widest">Expires</div>
+                            <div class="text-white font-semibold text-sm" th:text="${card.expiryDate}">MM/YY</div>
+                        </div>
+                    </div>
+                    <!-- Delete button -->
+                    <a th:href="@{'/saved-card/delete/' + ${card.id} + '?from=profile'}"
+                       class="absolute top-3 right-3 w-8 h-8 bg-white/10 hover:bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm btn-delete-card"
+                       title="Remove Card">
+                        <span class="material-symbols-outlined text-[16px]">close</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Booking History -->
+    <div id="panel-bookings" class="tab-panel hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
+            <div class="px-8 py-5 border-b border-outline-variant/20 flex items-center justify-between">
+                <h2 class="text-headline-sm font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">history</span> Booking History
+                </h2>
+                <a th:href="@{/booking/my-bookings}" class="text-xs font-bold text-primary hover:underline">View Full Page →</a>
+            </div>
+            <div th:if="${userBookings == null or userBookings.isEmpty()}" class="p-12 text-center">
+                <span class="material-symbols-outlined text-outline text-5xl mb-3">flight_takeoff</span>
+                <h3 class="text-headline-sm font-bold text-on-surface mb-2">No bookings yet</h3>
+                <p class="text-body-md text-on-surface-variant mb-4">Start exploring Sri Lanka and book your first adventure!</p>
+                <a th:href="@{/packages/list}" class="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-label-md hover:bg-primary-container transition-all shadow-md">
+                    <span class="material-symbols-outlined text-[18px]">explore</span> Browse Packages
+                </a>
+            </div>
+            <div th:if="${userBookings != null and !userBookings.isEmpty()}" class="divide-y divide-outline-variant/20">
+                <div th:each="booking : ${userBookings}" class="px-8 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-surface-container-lowest transition-colors">
+                    <div class="flex items-center gap-4 min-w-0">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                             th:classappend="${booking.bookingStatus == 'Active' ? 'bg-primary/10 text-primary' : 'bg-error-container text-on-error-container'}">
+                            <span class="material-symbols-outlined text-[20px]" th:text="${booking.bookingStatus == 'Active' ? 'check_circle' : 'cancel'}">check</span>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-sm font-bold text-on-surface" th:text="${booking.packageName}">Package</div>
+                            <div class="text-xs text-on-surface-variant flex items-center gap-2">
+                                <span th:text="${booking.location}">Location</span>
+                                <span>•</span>
+                                <span th:text="${booking.bookingDate}">Date</span>
+                                <span>•</span>
+                                <span th:text="${booking.numberOfPeople} + ' people'">1 people</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 sm:shrink-0">
+                        <div class="text-right">
+                            <div class="text-sm font-bold text-on-surface" th:text="'Rs. ' + ${booking.totalPrice}">Rs. 0</div>
+                            <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider"
+                                  th:classappend="${booking.bookingStatus == 'Active' ? 'bg-primary/10 text-primary' : 'bg-error-container text-on-error-container'}"
+                                  th:text="${booking.bookingStatus}">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: My Reviews -->
+    <div id="panel-reviews" class="tab-panel hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
+            <div class="px-8 py-5 border-b border-outline-variant/20 flex items-center justify-between">
+                <h2 class="text-headline-sm font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">star</span> My Reviews
+                </h2>
+                <a th:href="@{/review/add-page}" class="text-xs font-bold text-primary hover:underline">Write a Review →</a>
+            </div>
+            <div th:if="${userReviews == null or userReviews.isEmpty()}" class="p-12 text-center">
+                <span class="material-symbols-outlined text-outline text-5xl mb-3">reviews</span>
+                <h3 class="text-headline-sm font-bold text-on-surface mb-2">No reviews yet</h3>
+                <p class="text-body-md text-on-surface-variant mb-4">Share your experiences and help other travelers!</p>
+            </div>
+            <div th:if="${userReviews != null and !userReviews.isEmpty()}" class="divide-y divide-outline-variant/20">
+                <div th:each="r : ${userReviews}" class="px-8 py-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-1 text-secondary-container mb-1">
+                            <span class="material-symbols-outlined text-[14px] filled" th:each="i : ${#numbers.sequence(1, r.rating)}">star</span>
+                            <span class="material-symbols-outlined text-[14px] text-outline-variant" th:if="${r.rating < 5}" th:each="i : ${#numbers.sequence(r.rating + 1, 5)}">star</span>
+                        </div>
+                        <div class="text-sm font-bold text-on-surface" th:text="${r.packageName}">Package</div>
+                        <p class="text-xs text-on-surface-variant italic mt-2" th:text="${r.comment}">Comment</p>
+                        <div class="text-[10px] text-outline mt-2" th:text="${r.reviewDate}">Date</div>
+                    </div>
+                    <div class="flex items-center gap-2 sm:shrink-0 mt-3 sm:mt-0">
+                        <a th:href="@{'/review/edit/' + ${r.id}}" class="px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface flex items-center justify-center hover:bg-primary hover:text-white transition-colors shadow-sm text-xs font-bold">
+                            <span class="material-symbols-outlined text-[14px] mr-1">edit</span> Edit
+                        </a>
+                        <a th:href="@{'/review/delete/' + ${r.id}}" class="px-3 py-1.5 rounded-lg bg-error-container text-on-error-container flex items-center justify-center hover:bg-error hover:text-white transition-colors shadow-sm text-xs font-bold btn-delete-review">
+                            <span class="material-symbols-outlined text-[14px] mr-1">delete</span> Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Account Settings -->
+    <div id="panel-settings" class="tab-panel hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Edit Profile -->
+            <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 p-8">
+                <h2 class="text-headline-sm font-bold text-on-surface mb-2 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">manage_accounts</span> Edit Account
+                </h2>
+                <p class="text-sm text-on-surface-variant mb-6">Update your personal information and password.</p>
+                <a th:href="@{/user/edit}" class="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-label-md hover:bg-primary-container transition-all shadow-md">
+                    <span class="material-symbols-outlined text-[18px]">edit</span> Edit Profile
+                </a>
+            </div>
+            <!-- Danger Zone -->
+            <div class="bg-white rounded-2xl shadow-sm border border-error/20 p-8">
+                <h2 class="text-headline-sm font-bold text-error mb-2 flex items-center gap-2">
+                    <span class="material-symbols-outlined">warning</span> Danger Zone
+                </h2>
+                <p class="text-sm text-on-surface-variant mb-6">Permanently delete your account and all associated data. This action cannot be undone.</p>
+                <form th:action="@{/user/delete}" method="post" class="m-0">
+                    <button type="button" class="inline-flex items-center gap-2 bg-error text-on-error px-6 py-3 rounded-xl font-label-md hover:bg-error/80 transition-all shadow-md font-bold"
+                            id="btn-delete-account">
+                        <span class="material-symbols-outlined text-[18px]">delete_forever</span> Delete Account
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function switchTab(tabName) {
+        // Hide all panels
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+        // Reset all tabs
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('active-tab', 'text-primary', 'border-primary', 'font-bold');
+            b.classList.add('text-on-surface-variant', 'border-transparent', 'font-medium');
+        });
+        // Show target panel
+        document.getElementById('panel-' + tabName).classList.remove('hidden');
+        // Activate target tab
+        const activeBtn = document.getElementById('tab-' + tabName);
+        activeBtn.classList.add('active-tab', 'text-primary', 'border-primary', 'font-bold');
+        activeBtn.classList.remove('text-on-surface-variant', 'border-transparent', 'font-medium');
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Check URL params for tabs
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab && document.getElementById('tab-' + tab)) {
+            switchTab(tab);
+        }
+
+        // SweetAlert for Card Deletion
+        document.querySelectorAll('.btn-delete-card').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                Swal.fire({
+                    title: 'Remove Payment Method?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, remove it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = href;
+                    }
+                });
+            });
+        });
+
+        // SweetAlert for Account Deletion
+        const btnDeleteAccount = document.getElementById('btn-delete-account');
+        if (btnDeleteAccount) {
+            btnDeleteAccount.addEventListener('click', function(e) {
+                Swal.fire({
+                    title: 'Delete Account?',
+                    text: "This action is permanent and cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete account!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        btnDeleteAccount.closest('form').submit();
+                    }
+                });
+            });
+        }
+        // SweetAlert for Review Deletion
+        document.querySelectorAll('.btn-delete-review').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                Swal.fire({
+                    title: 'Delete Review?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = href;
+                    }
+                });
+            });
+        });
+
+    });
+</script>
+
+</body>
+</html>

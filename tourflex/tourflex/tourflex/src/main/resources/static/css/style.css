@@ -1,0 +1,143 @@
+/* Island Horizon Design System - Custom CSS */
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+a { transition: all 0.3s ease; }
+
+.text-balance { text-wrap: balance; }
+
+/* Form validation */
+.input-error { border-color: #ba1a1a !important; }
+.error-msg { color: #ba1a1a; font-size: 12px; margin-top: 4px; }
+
+/* ========================
+   PROFESSIONAL ANIMATIONS
+   ======================== */
+
+/* Ken Burns - Slow zoom on hero images */
+@keyframes kenburns {
+    0%   { transform: scale(1); }
+    100% { transform: scale(1.12); }
+}
+.hero-slide img {
+    animation: kenburns 8s ease-in-out forwards;
+}
+.hero-slide.active-slide img {
+    animation: kenburns 8s ease-in-out forwards;
+}
+
+/* Hero text stagger reveal */
+@keyframes heroFadeUp {
+    0%   { opacity: 0; transform: translateY(50px); filter: blur(4px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.hero-reveal { opacity: 0; }
+.hero-reveal.animate {
+    animation: heroFadeUp 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.hero-reveal-1.animate { animation-delay: 0.2s; }
+.hero-reveal-2.animate { animation-delay: 0.5s; }
+.hero-reveal-3.animate { animation-delay: 0.8s; }
+
+/* Search bar slide up */
+@keyframes slideUpFade {
+    0%   { opacity: 0; transform: translate(-50%, 40px); }
+    100% { opacity: 1; transform: translate(-50%, 0); }
+}
+.search-bar-anim {
+    opacity: 0;
+    animation: slideUpFade 0.8s cubic-bezier(0.22, 1, 0.36, 1) 1.2s forwards;
+}
+
+/* Navbar drop-in */
+@keyframes navDrop {
+    0%   { opacity: 0; transform: translateY(-30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+.nav-animate {
+    animation: navDrop 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+/* Scroll Reveal - Intersection Observer driven */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0) translateX(0) scale(1);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-left  { transform: translateX(-60px); }
+.reveal-right { transform: translateX(60px); }
+.reveal-scale { transform: scale(0.9); opacity: 0; }
+
+/* Slider dot indicators */
+.slider-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    transition: all 0.4s ease;
+    cursor: pointer;
+}
+.slider-dot.active-dot {
+    background: #fff;
+    width: 32px;
+    border-radius: 4px;
+}
+
+/* Slide transition for images */
+.hero-slide {
+    transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Card shimmer hover */
+@keyframes shimmer {
+    0%   { left: -100%; }
+    100% { left: 200%; }
+}
+.card-shimmer:hover::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    animation: shimmer 0.8s ease-in-out;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Pulse glow on CTA buttons */
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 183, 0, 0.4); }
+    50%      { box-shadow: 0 0 20px 4px rgba(255, 183, 0, 0.15); }
+}
+.cta-glow { animation: pulseGlow 3s ease-in-out infinite; }
+
+/* Floating effect for bento cards */
+@keyframes floatSoft {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+}
+.float-hover:hover {
+    animation: floatSoft 2s ease-in-out infinite;
+}
+
+/* Smooth counter/number scroll */
+@keyframes countUp {
+    0%   { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}

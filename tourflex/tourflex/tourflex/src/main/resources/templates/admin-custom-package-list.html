@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin - Custom Packages')}"></head>
+
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: admin-navbar}"></nav>
+
+<div class="bg-primary pt-32 pb-16 px-margin-mobile">
+    <div class="max-w-[1280px] mx-auto text-center">
+        <h1 class="text-display-lg-mobile font-display-lg md:text-display-lg text-white mb-4">All Custom Packages</h1>
+        <p class="text-body-lg text-white/80">Admin view of all custom packages created by customers.</p>
+    </div>
+</div>
+
+<main class="flex-1 max-w-[1280px] mx-auto px-margin-desktop py-12 w-full">
+
+    <div th:if="${packages != null}" class="bg-white rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-surface-container-low text-on-surface-variant text-label-md uppercase tracking-wider border-b border-outline-variant/30">
+                        <th class="py-4 px-6 font-bold">ID</th>
+                        <th class="py-4 px-6 font-bold">Customer Info</th>
+                        <th class="py-4 px-6 font-bold">Location</th>
+                        <th class="py-4 px-6 font-bold">Details</th>
+                        <th class="py-4 px-6 font-bold">Hotel / Transport</th>
+                        <th class="py-4 px-6 font-bold">Total Price</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/20">
+                    <tr th:each="p : ${packages}" class="hover:bg-surface-container-lowest transition-colors">
+                        <td class="py-4 px-6 text-sm font-semibold text-on-surface" th:text="${p.id}"></td>
+                        <td class="py-4 px-6">
+                            <div class="text-sm font-bold text-on-surface" th:text="${p.customerName}"></div>
+                            <div class="text-[12px] text-on-surface-variant" th:text="${p.customerEmail}"></div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="text-sm font-bold text-primary" th:text="${p.location}"></div>
+                            <div class="text-[11px] text-on-surface-variant mt-1 max-w-[150px] truncate" th:title="${p.visitingPlaces}" th:text="${p.visitingPlaces}"></div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="text-[12px] text-on-surface-variant mb-1"><span class="font-bold text-on-surface" th:text="${p.numberOfDays}"></span> Days</div>
+                            <div class="text-[12px] text-on-surface-variant mb-1"><span class="font-bold text-on-surface" th:text="${p.numberOfPeople}"></span> Guests</div>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-surface-container-high text-on-surface mt-1" th:text="${p.packageType}"></span>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="text-[12px] font-bold text-on-surface flex items-center gap-1 mb-1">
+                                <span class="material-symbols-outlined text-[14px]">hotel</span> <span th:text="${p.hotelName}" class="truncate max-w-[120px]"></span> (<span th:text="${p.hotelStarRating}"></span>)
+                            </div>
+                            <div class="text-[12px] font-bold text-on-surface flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[14px]">directions_car</span> <span th:text="${p.transportType}"></span>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6 text-sm font-bold text-secondary-container whitespace-nowrap" th:text="'Rs. ' + ${p.totalPrice}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

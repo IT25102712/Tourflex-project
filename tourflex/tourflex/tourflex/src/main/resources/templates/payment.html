@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Payment - TOURFLEX')}"></head>
+
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="bg-primary pt-32 pb-16 px-margin-mobile">
+    <div class="max-w-[800px] mx-auto text-center">
+        <h1 class="text-display-lg-mobile font-display-lg md:text-display-lg text-white mb-4">Secure Payment</h1>
+        <p class="text-body-lg text-white/80">Complete your booking securely.</p>
+    </div>
+</div>
+
+<main class="flex-1 max-w-[800px] mx-auto px-margin-mobile py-12 w-full -mt-10 relative z-10">
+    <div class="bg-white rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20 overflow-hidden">
+        
+        <div class="bg-surface-container-low p-6 md:p-8 flex justify-between items-center border-b border-outline-variant/30">
+            <div>
+                <div class="text-label-md text-outline uppercase tracking-widest font-bold mb-1">Amount Due</div>
+                <div class="text-3xl font-extrabold text-primary" th:text="'Rs. ' + ${amount}">Rs. 0</div>
+            </div>
+            <span class="material-symbols-outlined text-4xl text-outline-variant opacity-50">lock</span>
+        </div>
+
+        <div class="p-6 md:p-8">
+            <!-- SAVED CARDS -->
+            <div th:if="${savedCards != null and !savedCards.isEmpty()}" class="mb-10">
+                <h3 class="text-headline-sm text-primary mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary-container">credit_card</span> Saved Cards
+                </h3>
+                
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="bg-surface-container-lowest border border-outline-variant/50 p-4 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm" th:each="card : ${savedCards}">
+                        <div>
+                            <div class="font-bold text-on-surface mb-1 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px] text-outline">credit_score</span>
+                                <span th:text="${card.maskedCardNumber}"></span>
+                            </div>
+                            <div class="text-sm text-on-surface-variant font-medium" th:text="${card.cardHolderName}"></div>
+                        </div>
+                        
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button type="button"
+                                    class="flex-1 sm:flex-none bg-surface-container-high text-on-surface py-2 px-4 rounded-xl font-label-md hover:bg-surface-container-highest transition-colors font-semibold"
+                                    th:attr="data-holder=${card.cardHolderName},
+                                             data-number=${card.cardNumber},
+                                             data-expiry=${card.expiryDate}"
+                                    onclick="useSavedCard(this)">
+                                Use
+                            </button>
+                            <a th:href="@{'/saved-card/delete/' + ${card.id} + '?amount=' + ${amount} + '&customPackageId=' + ${customPackageId} + '&bookingId=' + ${bookingId}}"
+                               class="bg-error-container text-on-error-container py-2 px-3 rounded-xl hover:bg-error-container/80 transition-colors flex items-center justify-center btn-delete-card">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SAVE CARD -->
+            <div class="mb-10 border-t border-outline-variant/30 pt-8" th:if="${savedCards == null or savedCards.isEmpty() or true}">
+                <h3 class="text-headline-sm text-primary mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary-container">add_card</span> Add New Card
+                </h3>
+
+                <form action="/saved-card/save" method="post" onsubmit="return validateSaveCard(event)" id="saveCardForm" class="bg-surface-container-lowest border border-outline-variant/30 p-6 rounded-2xl shadow-sm">
+                    <!-- Carry the amount and bookingId through so we return to the correct payment page -->
+                    <input type="hidden" name="amount" th:value="${amount}">
+                    <input type="hidden" name="customPackageId" th:value="${customPackageId}">
+                    <input type="hidden" name="bookingId" th:value="${bookingId}">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Card Holder Name</label>
+                            <input type="text" id="saveName" name="cardHolderName" class="w-full bg-white border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" placeholder="John Doe">
+                            <div id="saveNameError" class="text-red-500 text-xs mt-1 ml-1 hidden"></div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Card Number</label>
+                            <input type="text" id="saveNumber" name="cardNumber" class="w-full bg-white border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatCardNumber(this)">
+                            <div id="saveNumberError" class="text-red-500 text-xs mt-1 ml-1 hidden"></div>
+                        </div>
+                        <div>
+                            <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Expiry Date</label>
+                            <div class="flex gap-2">
+                                <select id="saveExpiryMonth" class="w-1/2 bg-white border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all">
+                                    <option value="" disabled selected>MM</option>
+                                    <option th:each="m : ${#numbers.sequence(1, 12)}" th:value="${#numbers.formatInteger(m, 2)}" th:text="${#numbers.formatInteger(m, 2)}"></option>
+                                </select>
+                                <select id="saveExpiryYear" class="w-1/2 bg-white border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all">
+                                    <option value="" disabled selected>YY</option>
+                                    <option th:each="y : ${#numbers.sequence(24, 35)}" th:value="${y}" th:text="${y}"></option>
+                                </select>
+                            </div>
+                            <input type="hidden" id="saveExpiry" name="expiryDate">
+                            <div id="saveExpiryError" class="text-red-500 text-xs mt-1 ml-1 hidden"></div>
+                        </div>
+                        <div>
+                            <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Card Type</label>
+                            <select id="saveCardType" name="cardType" class="w-full bg-white border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all">
+                                <option value="">Select</option>
+                                <option value="Visa">Visa</option>
+                                <option value="MasterCard">MasterCard</option>
+                                <option value="Amex">Amex</option>
+                            </select>
+                            <div id="saveCardTypeError" class="text-red-500 text-xs mt-1 ml-1 hidden"></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full mt-6 bg-surface-container-high text-on-surface py-3 rounded-xl font-label-md hover:bg-surface-container-highest transition-colors border border-outline-variant/30 font-bold">
+                        Save Card for Future
+                    </button>
+                </form>
+            </div>
+
+            <!-- PAYMENT -->
+            <div class="border-t border-outline-variant/30 pt-8">
+                <h3 class="text-headline-sm text-primary mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary-container">payments</span> Payment Details
+                </h3>
+
+                <form action="/payment/save" method="post" id="paymentForm" onsubmit="return validatePayment(event)" class="flex flex-col gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Customer Name</label>
+                            <input type="text" id="custName" name="customerName" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" placeholder="Your Name" th:value="${loggedInUser.name}">
+                            <div id="custNameError" class="text-red-500 text-xs mt-1 ml-1 hidden"></div>
+                        </div>
+                        <div>
+                            <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Customer Email</label>
+                            <input type="email" id="custEmail" name="customerEmail" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" placeholder="name@example.com" th:value="${loggedInUser.email}">
+                            <div id="custEmailError" class="text-red-500 text-xs mt-1 ml-1 hidden"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-surface-container-low border border-outline-variant/30 p-6 rounded-2xl mt-2">
+                        <div class="mb-4">
+                            <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Name on Card</label>
+                            <input type="text" id="cardHolderName" name="cardHolderName" class="w-full bg-white border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" placeholder="John Doe">
+                            <div id="cardHolderNameError" class="text-red-500 text-xs mt-1 ml-1 hidden"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Card Number</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">credit_card</span>
+                                <input type="text" id="cardNumber" name="cardNumber" class="w-full bg-white border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all tracking-widest font-mono" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatCardNumber(this)">
+                            </div>
+                            <div id="cardNumberError" class="text-red-500 text-xs mt-1 ml-1 hidden"></div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Expiry</label>
+                                <div class="flex gap-2">
+                                    <select id="payExpiryMonth" class="w-1/2 bg-white border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all">
+                                        <option value="" disabled selected>MM</option>
+                                        <option th:each="m : ${#numbers.sequence(1, 12)}" th:value="${#numbers.formatInteger(m, 2)}" th:text="${#numbers.formatInteger(m, 2)}"></option>
+                                    </select>
+                                    <select id="payExpiryYear" class="w-1/2 bg-white border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all">
+                                        <option value="" disabled selected>YY</option>
+                                        <option th:each="y : ${#numbers.sequence(24, 35)}" th:value="${y}" th:text="${y}"></option>
+                                    </select>
+                                </div>
+                                <input type="hidden" id="payExpiry" name="expiryDate">
+                                <div id="payExpiryError" class="text-red-500 text-xs mt-1 ml-1 hidden"></div>
+                            </div>
+                            <div>
+                                <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">CVV</label>
+                                <input type="password" id="cvv" name="cvv" class="w-full bg-white border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all font-mono" placeholder="•••" maxlength="3" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                <div id="cvvError" class="text-red-500 text-xs mt-1 ml-1 hidden"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="amount" th:value="${amount}">
+                    <input type="hidden" name="customPackageId" th:value="${customPackageId}">
+                    <input type="hidden" name="bookingId" th:value="${bookingId}">
+
+                    <button type="submit" class="w-full bg-primary text-on-primary py-4 rounded-xl font-label-md hover:bg-primary-container transition-all shadow-md mt-4 flex justify-center items-center gap-2">
+                        <span class="material-symbols-outlined text-[20px]">lock</span> Pay <span th:text="'Rs. ' + ${amount}">Rs. 0</span>
+                    </button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function formatCardNumber(input) {
+        // Remove all non-digits
+        let value = input.value.replace(/\D/g, '');
+        // Add a space after every 4 digits
+        let formattedValue = value.replace(/(.{4})/g, '$1 ').trim();
+        input.value = formattedValue;
+    }
+
+    // Set dropdowns based on hidden field value
+    function setDropdownsFromValue(value, monthId, yearId) {
+        if (value && value.includes('/')) {
+            let parts = value.split('/');
+            document.getElementById(monthId).value = parts[0];
+            document.getElementById(yearId).value = parts[1];
+        }
+    }
+
+    function useSavedCard(btn) {
+        document.getElementById("cardHolderName").value = btn.getAttribute("data-holder");
+        document.getElementById("cardNumber").value = btn.getAttribute("data-number");
+        
+        let expiry = btn.getAttribute("data-expiry");
+        document.getElementById("payExpiry").value = expiry;
+        setDropdownsFromValue(expiry, "payExpiryMonth", "payExpiryYear");
+        
+        // Format the card number with spaces
+        formatCardNumber(document.getElementById("cardNumber"));
+        
+        // Highlight inputs briefly to show they were filled
+        ['cardHolderName', 'cardNumber', 'payExpiryMonth', 'payExpiryYear'].forEach(id => {
+            const el = document.getElementById(id);
+            el.classList.add('ring-2', 'ring-secondary-container');
+            setTimeout(() => el.classList.remove('ring-2', 'ring-secondary-container'), 1000);
+        });
+        
+        document.getElementById("cvv").focus();
+    }
+
+    function showError(elementId, message) {
+        const errorDiv = document.getElementById(elementId);
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('hidden');
+    }
+
+    function clearErrors() {
+        const errorDivs = document.querySelectorAll('.text-red-500');
+        errorDivs.forEach(div => {
+            div.textContent = '';
+            div.classList.add('hidden');
+        });
+    }
+
+    function validateSaveCard(event) {
+        event.preventDefault();
+        clearErrors();
+        let isValid = true;
+
+        let name = document.getElementById("saveName").value.trim();
+        let number = document.getElementById("saveNumber").value.replace(/\s/g, '');
+        let month = document.getElementById("saveExpiryMonth").value;
+        let year = document.getElementById("saveExpiryYear").value;
+        let cardType = document.getElementById("saveCardType").value;
+
+        if (!name || !/^[A-Za-z ]+$/.test(name)) {
+            showError("saveNameError", "Please enter a valid card holder name");
+            isValid = false;
+        }
+
+        if (!number || number.length !== 16) {
+            showError("saveNumberError", "Card number must be 16 digits");
+            isValid = false;
+        }
+
+        if (!month || !year) {
+            showError("saveExpiryError", "Please select expiry month and year");
+            isValid = false;
+        } else {
+            document.getElementById("saveExpiry").value = month + "/" + year;
+        }
+
+        if (!cardType) {
+            showError("saveCardTypeError", "Please select a card type");
+            isValid = false;
+        }
+
+        if (isValid) {
+            document.getElementById("saveCardForm").submit();
+        }
+        return false;
+    }
+
+    function validatePayment(event) {
+        event.preventDefault();
+        clearErrors();
+        let isValid = true;
+
+        let name = document.getElementById("custName").value.trim();
+        let email = document.getElementById("custEmail").value.trim();
+        let cardHolder = document.getElementById("cardHolderName").value.trim();
+        let number = document.getElementById("cardNumber").value.replace(/\s/g, '');
+        let month = document.getElementById("payExpiryMonth").value;
+        let year = document.getElementById("payExpiryYear").value;
+        let cvv = document.getElementById("cvv").value.trim();
+
+        if (!name || !/^[A-Za-z ]+$/.test(name)) {
+            showError("custNameError", "Please enter a valid name");
+            isValid = false;
+        }
+
+        if (!email || !email.includes("@")) {
+            showError("custEmailError", "Please enter a valid email address");
+            isValid = false;
+        }
+
+        if (!cardHolder || !/^[A-Za-z ]+$/.test(cardHolder)) {
+            showError("cardHolderNameError", "Please enter a valid card holder name");
+            isValid = false;
+        }
+
+        if (!number || number.length !== 16) {
+            showError("cardNumberError", "Card number must be 16 digits");
+            isValid = false;
+        }
+
+        if (!month || !year) {
+            showError("payExpiryError", "Please select expiry month and year");
+            isValid = false;
+        } else {
+            document.getElementById("payExpiry").value = month + "/" + year;
+        }
+
+        if (!cvv || cvv.length !== 3) {
+            showError("cvvError", "CVV must be 3 digits");
+            isValid = false;
+        }
+
+        if (isValid) {
+            document.getElementById("paymentForm").submit();
+        }
+        return false;
+    }
+
+    // SweetAlert for deleting saved card
+    document.querySelectorAll('.btn-delete-card').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const href = this.getAttribute('href');
+            
+            Swal.fire({
+                title: 'Delete Saved Card?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = href;
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

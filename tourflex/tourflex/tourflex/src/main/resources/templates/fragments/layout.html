@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title th:text="${title}">TOURFLEX</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#e7e8e9",
+                        "primary": "#002155",
+                        "on-background": "#191c1d",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c4c6d3",
+                        "surface-container": "#edeeef",
+                        "on-secondary-fixed": "#271900",
+                        "secondary-fixed-dim": "#ffba26",
+                        "primary-fixed-dim": "#b0c6ff",
+                        "surface": "#f8f9fa",
+                        "on-surface-variant": "#434651",
+                        "inverse-primary": "#b0c6ff",
+                        "primary-container": "#003580",
+                        "on-tertiary-fixed-variant": "#004c6b",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e1e3e4",
+                        "inverse-surface": "#2e3132",
+                        "on-tertiary-container": "#02aeef",
+                        "tertiary-fixed-dim": "#82cfff",
+                        "tertiary": "#002739",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container-low": "#f3f4f5",
+                        "on-primary-container": "#7fa1f2",
+                        "primary-fixed": "#d9e2ff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#c6e7ff",
+                        "surface-container-highest": "#e1e3e4",
+                        "secondary-container": "#ffb700",
+                        "on-tertiary-fixed": "#001e2d",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#003e58",
+                        "surface-dim": "#d9dadb",
+                        "on-primary-fixed-variant": "#1a438e",
+                        "on-surface": "#191c1d",
+                        "surface-tint": "#375ca8",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#001945",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#5e4100",
+                        "secondary": "#7d5800",
+                        "inverse-on-surface": "#f0f1f2",
+                        "outline": "#747782",
+                        "secondary-fixed": "#ffdea9",
+                        "background": "#f8f9fa",
+                        "on-secondary-container": "#6b4b00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "unit": "8px",
+                        "margin-desktop": "64px",
+                        "margin-mobile": "20px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "display-lg-mobile": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "800"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+
+<nav th:fragment="navbar" class="absolute top-0 w-full z-50 py-8 nav-animate">
+    <div class="max-w-[1280px] w-full mx-auto px-margin-desktop flex justify-between items-center">
+        <a th:href="@{/}" class="text-headline-md font-headline-md font-extrabold tracking-tight text-white no-underline drop-shadow-md">
+            TOURFLEX
+        </a>
+        <div class="hidden md:flex items-center gap-8 bg-white/10 backdrop-blur-md px-8 py-3 rounded-full border border-white/20 shadow-sm">
+            <a th:href="@{/}" class="text-white font-label-md text-label-md hover:text-secondary-container transition-colors duration-300">Home</a>
+            <a th:href="@{/packages/list}" class="text-white/80 font-label-md text-label-md hover:text-secondary-container transition-colors duration-300">Packages</a>
+            <a th:if="${session.user != null}" th:href="@{/custom-package/create}" class="text-white/80 font-label-md text-label-md hover:text-secondary-container transition-colors duration-300">Customize</a>
+            <a th:if="${session.user != null}" th:href="@{/custom-package/my}" class="text-white/80 font-label-md text-label-md hover:text-secondary-container transition-colors duration-300">My Custom Packages</a>
+            <a th:if="${session.user != null}" th:href="@{/booking/my-bookings}" class="text-white/80 font-label-md text-label-md hover:text-secondary-container transition-colors duration-300">My Bookings</a>
+            <a th:href="@{/review/add-page}" class="text-white/80 font-label-md text-label-md hover:text-secondary-container transition-colors duration-300">Reviews</a>
+        </div>
+        <div class="flex items-center gap-6">
+            <a th:if="${session.user != null}" th:href="@{/user/profile}" class="flex items-center gap-2 text-white font-label-md text-label-md hover:text-secondary-container transition-all drop-shadow-sm">
+                <span class="material-symbols-outlined">account_circle</span>
+                Profile
+            </a>
+            <a th:if="${session.user == null}" th:href="@{/user/register-page}" class="text-white font-label-md text-label-md hover:text-secondary-container transition-all hidden md:block drop-shadow-sm">
+                Register
+            </a>
+            <a th:if="${session.user == null}" th:href="@{/user/login-page}" class="flex items-center gap-2 bg-primary text-on-primary px-8 py-3 rounded-full font-label-md text-label-md hover:bg-primary-container transition-all shadow-[0_4px_14px_rgba(0,0,0,0.2)] hover:-translate-y-0.5">
+                <span class="material-symbols-outlined text-sm">login</span>
+                Login
+            </a>
+            <a th:if="${session.user != null}" th:href="@{/user/logout}" class="bg-primary text-on-primary px-8 py-3 rounded-full font-label-md text-label-md hover:bg-primary-container transition-all shadow-[0_4px_14px_rgba(0,0,0,0.2)] hover:-translate-y-0.5">
+                Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<nav th:fragment="admin-navbar" class="absolute top-0 w-full z-50 py-8 nav-animate">
+    <div class="max-w-[1280px] w-full mx-auto px-margin-desktop flex justify-between items-center">
+        <a th:href="@{/admin/dashboard}" class="text-headline-md font-headline-md font-extrabold tracking-tight text-white no-underline drop-shadow-md">
+            TOURFLEX <span class="text-outline text-sm tracking-normal font-normal ml-2">Admin</span>
+        </a>
+        <div class="hidden md:flex items-center gap-8 bg-white/10 backdrop-blur-md px-8 py-3 rounded-full border border-white/20 shadow-sm">
+            <a th:href="@{/admin/dashboard}" class="text-white font-label-md text-label-md hover:text-secondary-container transition-colors duration-300">Dashboard</a>
+            <a th:href="@{/packages/manage}" class="text-white/80 font-label-md text-label-md hover:text-secondary-container transition-colors duration-300">Packages</a>
+            <a th:href="@{/hotel/manage}" class="text-white/80 font-label-md text-label-md hover:text-secondary-container transition-colors duration-300">Hotels</a>
+            <a th:href="@{/booking/list}" class="text-white/80 font-label-md text-label-md hover:text-secondary-container transition-colors duration-300">Bookings</a>
+            <a th:href="@{/payment/list}" class="text-white/80 font-label-md text-label-md hover:text-secondary-container transition-colors duration-300">Payments</a>
+        </div>
+        <div class="flex items-center gap-6">
+            <a th:href="@{/admin/logout}" class="bg-primary text-on-primary px-8 py-3 rounded-full font-label-md text-label-md hover:bg-primary-container transition-all shadow-[0_4px_14px_rgba(0,0,0,0.2)] hover:-translate-y-0.5">
+                Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<footer th:fragment="footer" class="bg-surface-container-lowest border-t border-outline-variant/30 py-margin-mobile">
+    <div class="max-w-[1280px] mx-auto px-margin-desktop">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex flex-col items-center md:items-start reveal reveal-left">
+                <div class="text-headline-sm font-headline-sm font-bold text-primary mb-2">
+                    TOURFLEX
+                </div>
+                <p class="text-body-md text-on-surface-variant font-body-md text-center md:text-left">
+                    © 2026 TOURFLEX Sri Lanka. All rights reserved.
+                </p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-8 reveal reveal-delay-100">
+                <a href="#" class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-all hover:scale-105">Terms of Service</a>
+                <a href="#" class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-all hover:scale-105">Privacy Policy</a>
+                <a href="#" class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-all hover:scale-105">Contact Us</a>
+                <a href="#" class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-all hover:scale-105">About Sri Lanka</a>
+                <a href="#" class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-all hover:scale-105">Sustainable Travel</a>
+            </div>
+            <div class="flex gap-4 reveal reveal-delay-200">
+                <a href="#" class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-white hover:shadow-lg hover:-translate-y-1 transition-all">
+                    <span class="material-symbols-outlined">public</span>
+                </a>
+                <a href="#" class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-white hover:shadow-lg hover:-translate-y-1 transition-all">
+                    <span class="material-symbols-outlined">alternate_email</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const reveals = document.querySelectorAll(".reveal");
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("active");
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            reveals.forEach((element) => {
+                observer.observe(element);
+            });
+        });
+    </script>
+</footer>
+</html>
