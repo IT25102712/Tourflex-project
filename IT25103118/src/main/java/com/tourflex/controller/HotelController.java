@@ -41,7 +41,7 @@ public class HotelController {
         hotel.setStarRating(starRating);
 
         hotelService.saveHotel(hotel);
-        return "redirect:/hotel/manage";
+        return "redirect:/admin/dashboard?tab=hotels";
     }
 
     @GetMapping("/manage")
@@ -61,7 +61,7 @@ public class HotelController {
         }
 
         hotelService.deleteHotel(id);
-        return "redirect:/hotel/manage";
+        return "redirect:/admin/dashboard?tab=hotels";
     }
 
     @ResponseBody

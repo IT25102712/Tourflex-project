@@ -1,78 +1,90 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>TOURFLEX - Manage Hotels</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            margin: 0;
-        }
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Manage Hotels - TOURFLEX')}"></head>
 
-        h1 {
-            text-align: center;
-            margin: 30px 0;
-        }
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
 
-        table {
-            width: 95%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            background: white;
-        }
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: admin-navbar}"></nav>
 
-        th, td {
-            border: 1px solid #ccc;
-            padding: 12px;
-            text-align: center;
-        }
+<div class="bg-primary pt-32 pb-16 px-margin-mobile">
+    <div class="max-w-[1280px] mx-auto text-center">
+        <h1 class="text-display-lg-mobile font-display-lg md:text-display-lg text-white mb-4">Manage Hotels</h1>
+        <p class="text-body-lg text-white/80">View and manage the hotel database.</p>
+    </div>
+</div>
 
-        th {
-            background: #0d6efd;
-            color: white;
-        }
+<main class="flex-1 max-w-[1280px] mx-auto px-margin-desktop py-12 w-full">
 
-        .delete-btn {
-            background: #dc3545;
-            color: white;
-            padding: 8px 12px;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-        }
+    <div class="mb-6 flex justify-end">
+        <a th:href="@{/hotel/add-page}" class="bg-primary text-on-primary py-2 px-6 rounded-xl font-label-md hover:bg-primary-container transition-all shadow-md flex justify-center items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">add</span> Add New Hotel
+        </a>
+    </div>
 
-        .delete-btn:hover {
-            background: #bb2d3b;
-        }
-    </style>
-</head>
-<body>
+    <div th:if="${hotels != null}" class="bg-white rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-surface-container-low text-on-surface-variant text-label-md uppercase tracking-wider border-b border-outline-variant/30">
+                        <th class="py-4 px-6 font-bold w-16">ID</th>
+                        <th class="py-4 px-6 font-bold">Hotel Name</th>
+                        <th class="py-4 px-6 font-bold">Location</th>
+                        <th class="py-4 px-6 font-bold">Star Rating</th>
+                        <th class="py-4 px-6 font-bold text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/20">
+                    <tr th:each="hotel : ${hotels}" class="hover:bg-surface-container-lowest transition-colors group">
+                        <td class="py-4 px-6 text-sm font-semibold text-on-surface" th:text="${hotel.id}"></td>
+                        <td class="py-4 px-6 text-sm font-bold text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">hotel</span>
+                            <span th:text="${hotel.hotelName}"></span>
+                        </td>
+                        <td class="py-4 px-6 text-sm text-on-surface-variant font-medium" th:text="${hotel.location}"></td>
+                        <td class="py-4 px-6 text-sm text-secondary-container font-bold tracking-wider" th:text="${hotel.starRating}"></td>
+                        <td class="py-4 px-6 text-center">
+                            <a th:href="@{'/hotel/delete/' + ${hotel.id}}"
+                               class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-error-container text-on-error-container hover:bg-error-container/80 transition-colors btn-delete-hotel">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<h1>Manage Hotels</h1>
+</main>
 
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Hotel Name</th>
-        <th>Location</th>
-        <th>Star Rating</th>
-        <th>Action</th>
-    </tr>
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 
-    <tr th:each="hotel : ${hotels}">
-        <td th:text="${hotel.id}"></td>
-        <td th:text="${hotel.hotelName}"></td>
-        <td th:text="${hotel.location}"></td>
-        <td th:text="${hotel.starRating}"></td>
-        <td>
-            <a th:href="@{'/hotel/delete/' + ${hotel.id}}"
-               class="delete-btn"
-               onclick="return confirm('Delete this hotel?');">
-                Delete
-            </a>
-        </td>
-    </tr>
-</table>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.btn-delete-hotel').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                Swal.fire({
+                    title: 'Delete Hotel?',
+                    text: "This action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = href;
+                    }
+                });
+            });
+        });
+    });
+</script>
 
 </body>
 </html>
