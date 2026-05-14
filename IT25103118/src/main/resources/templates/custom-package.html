@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Customize Package - TOURFLEX')}"></head>
+
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="bg-primary pt-32 pb-16 px-margin-mobile">
+    <div class="max-w-[850px] mx-auto text-center">
+        <h1 class="text-display-lg-mobile font-display-lg md:text-display-lg text-white mb-4">Create Your Journey</h1>
+        <p class="text-body-lg text-white/80">Tailor your Sri Lankan experience exactly how you want it.</p>
+    </div>
+</div>
+
+<main class="flex-1 max-w-[850px] mx-auto px-margin-mobile py-12 w-full -mt-10 relative z-10">
+    <div class="bg-white rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20 p-8 md:p-12">
+        
+        <div class="mb-8" th:if="${message}">
+            <div class="bg-surface-container-high border-l-4 border-secondary-container text-on-surface p-4 rounded-r-lg font-label-md">
+                <span class="material-symbols-outlined align-middle text-secondary-container mr-2">check_circle</span>
+                <span th:text="${message}"></span>
+            </div>
+        </div>
+
+        <!-- Sticky Price Box -->
+        <div class="sticky top-24 bg-surface-container-low border border-outline-variant/30 rounded-2xl p-6 mb-10 text-center z-20 shadow-sm">
+            <h3 class="text-label-md text-outline uppercase tracking-widest font-bold mb-2">Estimated Total Price</h3>
+            <div class="text-4xl font-extrabold text-primary mb-2" id="estimatedPrice">Rs. 0.00</div>
+            <div class="text-xs text-on-surface-variant font-medium">Hotel list is dynamically loaded based on the selected location.</div>
+        </div>
+
+        <form action="/custom-package/save" method="post" class="flex flex-col gap-6">
+            <input type="hidden" name="calculatedPrice" id="calculatedPriceInput">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Your Name</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">person</span>
+                        <input type="text" name="customerName" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" th:value="${session.user.name}" readonly required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Your Email</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">mail</span>
+                        <input type="email" name="customerEmail" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" th:value="${session.user.email}" readonly required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-outline-variant/20 pt-6">
+                <h3 class="text-headline-sm text-primary mb-4">Tour Configuration</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Destination</label>
+                        <select name="location" id="location" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" required onchange="loadHotels(); calculatePrice();">
+                            <option value="">Select Location</option>
+                            <option value="Ella">Ella</option>
+                            <option value="Kandy">Kandy</option>
+                            <option value="Nuwara Eliya">Nuwara Eliya</option>
+                            <option value="Yala">Yala</option>
+                            <option value="Bentota">Bentota</option>
+                            <option value="Galle">Galle</option>
+                            <option value="Sigiriya">Sigiriya</option>
+                            <option value="Trincomalee">Trincomalee</option>
+                            <option value="Mirissa">Mirissa</option>
+                            <option value="Colombo">Colombo</option>
+                            <option value="Jaffna">Jaffna</option>
+                            <option value="Anuradhapura">Anuradhapura</option>
+                            <option value="Polonnaruwa">Polonnaruwa</option>
+                            <option value="Dambulla">Dambulla</option>
+                            <option value="Habarana">Habarana</option>
+                            <option value="Pasikuda">Pasikuda</option>
+                            <option value="Arugam Bay">Arugam Bay</option>
+                            <option value="Hikkaduwa">Hikkaduwa</option>
+                            <option value="Unawatuna">Unawatuna</option>
+                            <option value="Weligama">Weligama</option>
+                            <option value="Tangalle">Tangalle</option>
+                            <option value="Negombo">Negombo</option>
+                            <option value="Kalpitiya">Kalpitiya</option>
+                            <option value="Kitulgala">Kitulgala</option>
+                            <option value="Belihuloya">Belihuloya</option>
+                            <option value="Horton Plains">Horton Plains</option>
+                            <option value="Bandarawela">Bandarawela</option>
+                            <option value="Badulla">Badulla</option>
+                            <option value="Ratnapura">Ratnapura</option>
+                            <option value="Sinharaja">Sinharaja</option>
+                            <option value="Udawalawe">Udawalawe</option>
+                            <option value="Minneriya">Minneriya</option>
+                            <option value="Wilpattu">Wilpattu</option>
+                            <option value="Pinnawala">Pinnawala</option>
+                            <option value="Matara">Matara</option>
+                            <option value="Batticaloa">Batticaloa</option>
+                            <option value="Ampara">Ampara</option>
+                            <option value="Kurunegala">Kurunegala</option>
+                            <option value="Matale">Matale</option>
+                            <option value="Mahiyanganaya">Mahiyanganaya</option>
+                            <option value="Mannar">Mannar</option>
+                            <option value="Vavuniya">Vavuniya</option>
+                            <option value="Kilinochchi">Kilinochchi</option>
+                            <option value="Mullaitivu">Mullaitivu</option>
+                            <option value="Chilaw">Chilaw</option>
+                            <option value="Puttalam">Puttalam</option>
+                            <option value="Beruwala">Beruwala</option>
+                            <option value="Aluthgama">Aluthgama</option>
+                            <option value="Ahangama">Ahangama</option>
+                            <option value="Tissamaharama">Tissamaharama</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Number of Days</label>
+                        <input type="number" name="numberOfDays" id="numberOfDays" min="1" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" required oninput="calculatePrice();">
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Visiting Places</label>
+                    <textarea name="visitingPlaces" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all resize-none h-28" required placeholder="Example: Nine Arches Bridge, Little Adam's Peak, Ravana Falls"></textarea>
+                </div>
+            </div>
+
+            <div class="border-t border-outline-variant/20 pt-6">
+                <h3 class="text-headline-sm text-primary mb-4">Travel Details</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Number of People</label>
+                        <input type="number" name="numberOfPeople" id="numberOfPeople" min="1" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" required oninput="calculatePrice();">
+                    </div>
+
+                    <div>
+                        <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Package Type</label>
+                        <select name="packageType" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" required>
+                            <option value="Single">Single</option>
+                            <option value="Couple">Couple</option>
+                            <option value="Family">Family</option>
+                            <option value="Group">Group</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Hotel</label>
+                        <select name="hotelName" id="hotelName" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" required onchange="updateHotelStar(); calculatePrice();">
+                            <option value="">Select Hotel</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Hotel Star Rating</label>
+                        <input type="text" name="hotelStarRating" id="hotelStarRating" class="w-full bg-surface-container-low border border-outline-variant/50 text-on-surface-variant rounded-xl px-4 py-3 outline-none cursor-not-allowed" readonly required>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Transport</label>
+                        <select name="transportType" id="transportType" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" required onchange="calculatePrice();">
+                            <option value="">Select Transport</option>
+                            <option value="Car">Car</option>
+                            <option value="Mini Van">Mini Van</option>
+                            <option value="Van">Van</option>
+                            <option value="Jeep">Jeep</option>
+                            <option value="Small Bus">Small Bus</option>
+                            <option value="Luxury Bus">Luxury Bus</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-secondary-container text-on-secondary-fixed py-4 rounded-xl font-bold text-label-md hover:bg-secondary-fixed transition-colors mt-4 shadow-md flex justify-center items-center gap-2">
+                <span class="material-symbols-outlined text-[20px]">magic_button</span> Create Custom Package
+            </button>
+        </form>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<script>
+    let hotelsForLocation = [];
+
+    async function loadHotels() {
+        const location = document.getElementById("location").value;
+        const hotelSelect = document.getElementById("hotelName");
+        const hotelStarInput = document.getElementById("hotelStarRating");
+
+        hotelSelect.innerHTML = '<option value="">Select Hotel</option>';
+        hotelStarInput.value = "";
+        hotelsForLocation = [];
+
+        if (!location) {
+            return;
+        }
+
+        const response = await fetch(`/hotel/by-location?location=${encodeURIComponent(location)}`);
+        const hotels = await response.json();
+
+        hotelsForLocation = hotels;
+
+        hotels.forEach(hotel => {
+            const option = document.createElement("option");
+            option.value = hotel.hotelName;
+            option.textContent = hotel.hotelName;
+            hotelSelect.appendChild(option);
+        });
+    }
+
+    function updateHotelStar() {
+        const selectedHotelName = document.getElementById("hotelName").value;
+        const hotelStarInput = document.getElementById("hotelStarRating");
+
+        const selectedHotel = hotelsForLocation.find(h => h.hotelName === selectedHotelName);
+
+        hotelStarInput.value = selectedHotel ? selectedHotel.starRating : "";
+    }
+
+    function calculatePrice() {
+        const days = parseInt(document.getElementById("numberOfDays").value) || 0;
+        const people = parseInt(document.getElementById("numberOfPeople").value) || 0;
+        const hotelStar = document.getElementById("hotelStarRating").value;
+        const transport = document.getElementById("transportType").value;
+
+        let basePerDay = 8000;
+        let hotelCost = 0;
+        let transportCost = 0;
+
+        if (hotelStar === "3 Star") {
+            hotelCost = 3000;
+        } else if (hotelStar === "4 Star") {
+            hotelCost = 5000;
+        } else if (hotelStar === "5 Star") {
+            hotelCost = 8000;
+        }
+
+        if (transport === "Car") {
+            transportCost = 2000;
+        } else if (transport === "Mini Van") {
+            transportCost = 2800;
+        } else if (transport === "Van") {
+            transportCost = 3500;
+        } else if (transport === "Jeep") {
+            transportCost = 4000;
+        } else if (transport === "Small Bus") {
+            transportCost = 5000;
+        } else if (transport === "Luxury Bus") {
+            transportCost = 7000;
+        }
+
+        let total = (days * (basePerDay + hotelCost + transportCost)) + (people * 1000);
+
+        document.getElementById("estimatedPrice").textContent = "Rs. " + total.toFixed(2);
+        
+        // Update the hidden field for backend
+        document.getElementById("calculatedPriceInput").value = total;
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Edit Custom Package - TOURFLEX')}"></head>
+
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="bg-primary pt-32 pb-16 px-margin-mobile">
+    <div class="max-w-[850px] mx-auto text-center">
+        <h1 class="text-display-lg-mobile font-display-lg md:text-display-lg text-white mb-4">Edit Custom Package</h1>
+        <p class="text-body-lg text-white/80">Update your personalized Sri Lankan itinerary.</p>
+    </div>
+</div>
+
+<main class="flex-1 max-w-[850px] mx-auto px-margin-mobile py-12 w-full -mt-10 relative z-10">
+    <div class="bg-white rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20 p-8 md:p-12">
+
+        <!-- Sticky Price Box -->
+        <div class="sticky top-24 bg-surface-container-low border border-outline-variant/30 rounded-2xl p-6 mb-10 text-center z-20 shadow-sm">
+            <h3 class="text-label-md text-outline uppercase tracking-widest font-bold mb-2">Estimated Total Price</h3>
+            <div class="text-4xl font-extrabold text-primary mb-2" id="estimatedPrice">Rs. 0.00</div>
+            <div class="text-xs text-on-surface-variant font-medium">Price updates automatically as you change selections.</div>
+        </div>
+
+        <form action="/custom-package/update" method="post" class="flex flex-col gap-6">
+            <!-- Hidden fields -->
+            <input type="hidden" name="id" th:value="${pkg.id}">
+            <input type="hidden" name="calculatedPrice" id="calculatedPriceInput">
+
+            <!-- Location -->
+            <div class="border-t border-outline-variant/20 pt-6">
+                <h3 class="text-headline-sm text-primary mb-4">Tour Configuration</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Destination</label>
+                        <select name="location" id="location"
+                                class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all"
+                                required onchange="loadHotels(); calculatePrice();">
+                            <option value="">Select Location</option>
+                            <option th:each="loc : ${ {'Ella','Kandy','Nuwara Eliya','Yala','Bentota','Galle','Sigiriya','Trincomalee','Mirissa','Colombo','Jaffna','Anuradhapura','Polonnaruwa','Dambulla','Habarana','Pasikuda','Arugam Bay','Hikkaduwa','Unawatuna','Weligama','Tangalle','Negombo','Kalpitiya','Kitulgala','Belihuloya','Horton Plains','Bandarawela','Badulla','Ratnapura','Sinharaja','Udawalawe','Minneriya','Wilpattu','Pinnawala','Matara','Batticaloa','Ampara','Kurunegala','Matale','Mahiyanganaya','Mannar','Vavuniya','Kilinochchi','Mullaitivu','Chilaw','Puttalam','Beruwala','Aluthgama','Ahangama','Tissamaharama'} }"
+                                  th:value="${loc}"
+                                  th:text="${loc}"
+                                  th:selected="${loc == pkg.location}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Number of Days</label>
+                        <input type="number" name="numberOfDays" id="numberOfDays" min="1"
+                               class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all"
+                               required oninput="calculatePrice();"
+                               th:value="${pkg.numberOfDays}">
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Visiting Places</label>
+                    <textarea name="visitingPlaces"
+                              class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all resize-none h-28"
+                              required placeholder="Example: Nine Arches Bridge, Little Adam's Peak, Ravana Falls"
+                              th:text="${pkg.visitingPlaces}"></textarea>
+                </div>
+            </div>
+
+            <!-- Travel Details -->
+            <div class="border-t border-outline-variant/20 pt-6">
+                <h3 class="text-headline-sm text-primary mb-4">Travel Details</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Number of People</label>
+                        <input type="number" name="numberOfPeople" id="numberOfPeople" min="1"
+                               class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all"
+                               required oninput="calculatePrice();"
+                               th:value="${pkg.numberOfPeople}">
+                    </div>
+
+                    <div>
+                        <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Package Type</label>
+                        <select name="packageType" id="packageType"
+                                class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all"
+                                required>
+                            <option value="Single"   th:selected="${pkg.packageType == 'Single'}">Single</option>
+                            <option value="Couple"   th:selected="${pkg.packageType == 'Couple'}">Couple</option>
+                            <option value="Family"   th:selected="${pkg.packageType == 'Family'}">Family</option>
+                            <option value="Group"    th:selected="${pkg.packageType == 'Group'}">Group</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Hotel</label>
+                        <!-- Populated by JS; current value pre-filled via data attribute -->
+                        <select name="hotelName" id="hotelName"
+                                class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all"
+                                required onchange="updateHotelStar(); calculatePrice();"
+                                th:data-current="${pkg.hotelName}">
+                            <option value="">Select Hotel</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Hotel Star Rating</label>
+                        <input type="text" name="hotelStarRating" id="hotelStarRating"
+                               class="w-full bg-surface-container-low border border-outline-variant/50 text-on-surface-variant rounded-xl px-4 py-3 outline-none cursor-not-allowed"
+                               readonly required
+                               th:value="${pkg.hotelStarRating}">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Transport</label>
+                        <select name="transportType" id="transportType"
+                                class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all"
+                                required onchange="calculatePrice();">
+                            <option value="">Select Transport</option>
+                            <option value="Car"         th:selected="${pkg.transportType == 'Car'}">Car</option>
+                            <option value="Mini Van"    th:selected="${pkg.transportType == 'Mini Van'}">Mini Van</option>
+                            <option value="Van"         th:selected="${pkg.transportType == 'Van'}">Van</option>
+                            <option value="Jeep"        th:selected="${pkg.transportType == 'Jeep'}">Jeep</option>
+                            <option value="Small Bus"   th:selected="${pkg.transportType == 'Small Bus'}">Small Bus</option>
+                            <option value="Luxury Bus"  th:selected="${pkg.transportType == 'Luxury Bus'}">Luxury Bus</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col gap-3 mt-4">
+                <button type="submit"
+                        class="w-full bg-primary text-on-primary py-4 rounded-xl font-bold text-label-md hover:bg-primary-container transition-all shadow-md flex justify-center items-center gap-2">
+                    <span class="material-symbols-outlined text-[20px]">save</span> Update Package
+                </button>
+                <a th:href="@{/custom-package/my}"
+                   class="w-full bg-surface-container-low text-on-surface-variant py-3.5 rounded-xl font-label-md hover:bg-surface-container-high transition-all text-center border border-outline-variant/30">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Pre-populate from the existing package saved in DB
+    const savedLocation   = /*[[${pkg.location}]]*/ '';
+    const savedHotelName  = /*[[${pkg.hotelName}]]*/ '';
+    const savedHotelStar  = /*[[${pkg.hotelStarRating}]]*/ '';
+
+    let hotelsForLocation = [];
+
+    // On page load: load hotels for saved location, then restore hotel + star, then recalculate price
+    window.addEventListener('DOMContentLoaded', async () => {
+        if (savedLocation) {
+            await loadHotels();           // fills hotel dropdown for current location
+            restoreSavedHotel();          // selects the previously chosen hotel
+        }
+        calculatePrice();                 // show correct price immediately on load
+    });
+
+    async function loadHotels() {
+        const location = document.getElementById('location').value;
+        const hotelSelect = document.getElementById('hotelName');
+        const hotelStarInput = document.getElementById('hotelStarRating');
+
+        hotelSelect.innerHTML = '<option value="">Select Hotel</option>';
+        hotelStarInput.value = '';
+        hotelsForLocation = [];
+
+        if (!location) return;
+
+        const response = await fetch(`/hotel/by-location?location=${encodeURIComponent(location)}`);
+        const hotels = await response.json();
+        hotelsForLocation = hotels;
+
+        hotels.forEach(hotel => {
+            const option = document.createElement('option');
+            option.value = hotel.hotelName;
+            option.textContent = hotel.hotelName;
+            hotelSelect.appendChild(option);
+        });
+    }
+
+    // Re-select the saved hotel name and star rating after hotels are loaded
+    function restoreSavedHotel() {
+        const hotelSelect = document.getElementById('hotelName');
+        const hotelStarInput = document.getElementById('hotelStarRating');
+
+        if (savedHotelName) {
+            hotelSelect.value = savedHotelName;
+        }
+
+        // Restore star rating: prefer the DB value; fall back to fetched data
+        const matched = hotelsForLocation.find(h => h.hotelName === savedHotelName);
+        hotelStarInput.value = matched ? matched.starRating : savedHotelStar;
+    }
+
+    function updateHotelStar() {
+        const selectedHotelName = document.getElementById('hotelName').value;
+        const hotelStarInput    = document.getElementById('hotelStarRating');
+        const selectedHotel     = hotelsForLocation.find(h => h.hotelName === selectedHotelName);
+        hotelStarInput.value    = selectedHotel ? selectedHotel.starRating : '';
+        calculatePrice();
+    }
+
+    // Exact same formula used in custom-package.html (create form)
+    function calculatePrice() {
+        const days      = parseInt(document.getElementById('numberOfDays').value)   || 0;
+        const people    = parseInt(document.getElementById('numberOfPeople').value) || 0;
+        const hotelStar = document.getElementById('hotelStarRating').value;
+        const transport = document.getElementById('transportType').value;
+
+        const basePerDay = 8000;
+
+        let hotelCost = 0;
+        if      (hotelStar === '3 Star') hotelCost = 3000;
+        else if (hotelStar === '4 Star') hotelCost = 5000;
+        else if (hotelStar === '5 Star') hotelCost = 8000;
+
+        let transportCost = 0;
+        if      (transport === 'Car')         transportCost = 2000;
+        else if (transport === 'Mini Van')    transportCost = 2800;
+        else if (transport === 'Van')         transportCost = 3500;
+        else if (transport === 'Jeep')        transportCost = 4000;
+        else if (transport === 'Small Bus')   transportCost = 5000;
+        else if (transport === 'Luxury Bus')  transportCost = 7000;
+
+        const total = (days * (basePerDay + hotelCost + transportCost)) + (people * 1000);
+
+        document.getElementById('estimatedPrice').textContent       = 'Rs. ' + total.toFixed(2);
+        document.getElementById('calculatedPriceInput').value       = total;
+    }
+    /*]]>*/
+</script>
+
+</body>
+</html>
