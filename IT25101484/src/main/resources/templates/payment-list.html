@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin - Payments')}"></head>
+
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: admin-navbar}"></nav>
+
+<div class="bg-primary pt-32 pb-16 px-margin-mobile">
+    <div class="max-w-[1280px] mx-auto text-center">
+        <h1 class="text-display-lg-mobile font-display-lg md:text-display-lg text-white mb-4">All Payments</h1>
+        <p class="text-body-lg text-white/80">Admin view of all customer transactions.</p>
+    </div>
+</div>
+
+<main class="flex-1 max-w-[1280px] mx-auto px-margin-desktop py-12 w-full">
+
+    <div th:if="${payments != null}" class="bg-white rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-surface-container-low text-on-surface-variant text-label-md uppercase tracking-wider border-b border-outline-variant/30">
+                        <th class="py-4 px-6 font-bold">Transaction ID</th>
+                        <th class="py-4 px-6 font-bold">Customer Name</th>
+                        <th class="py-4 px-6 font-bold">Email</th>
+                        <th class="py-4 px-6 font-bold">Amount</th>
+                        <th class="py-4 px-6 font-bold">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/20">
+                    <tr th:each="p : ${payments}" class="hover:bg-surface-container-lowest transition-colors">
+                        <td class="py-4 px-6 text-sm font-semibold text-on-surface" th:text="${p.id}"></td>
+                        <td class="py-4 px-6 text-sm font-bold text-on-surface" th:text="${p.customerName}"></td>
+                        <td class="py-4 px-6 text-sm text-on-surface-variant" th:text="${p.customerEmail}"></td>
+                        <td class="py-4 px-6 text-sm font-bold text-secondary-container" th:text="'Rs. ' + ${p.amount}"></td>
+                        <td class="py-4 px-6">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-green-100 text-green-800" th:if="${p.paymentStatus == 'Success'}">
+                                <span class="material-symbols-outlined text-[14px]">check_circle</span> <span th:text="${p.paymentStatus}"></span>
+                            </span>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-surface-container-high text-on-surface" th:if="${p.paymentStatus != 'Success'}">
+                                <span th:text="${p.paymentStatus}"></span>
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
