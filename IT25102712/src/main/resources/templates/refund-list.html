@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin - Refunds')}"></head>
+
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: admin-navbar}"></nav>
+
+<div class="bg-primary pt-32 pb-16 px-margin-mobile">
+    <div class="max-w-[1280px] mx-auto text-center">
+        <h1 class="text-display-lg-mobile font-display-lg md:text-display-lg text-white mb-4">Refund Requests</h1>
+        <p class="text-body-lg text-white/80">Manage and process customer refund requests.</p>
+    </div>
+</div>
+
+<main class="flex-1 max-w-[1280px] mx-auto px-margin-desktop py-12 w-full">
+
+    <div th:if="${refunds != null}" class="bg-white rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-surface-container-low text-on-surface-variant text-label-md uppercase tracking-wider border-b border-outline-variant/30">
+                        <th class="py-4 px-6 font-bold">ID / Booking</th>
+                        <th class="py-4 px-6 font-bold">Customer Info</th>
+                        <th class="py-4 px-6 font-bold">Package</th>
+                        <th class="py-4 px-6 font-bold">Bank Details</th>
+                        <th class="py-4 px-6 font-bold">Note</th>
+                        <th class="py-4 px-6 font-bold">Status</th>
+                        <th class="py-4 px-6 font-bold text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/20">
+                    <tr th:each="r : ${refunds}" class="hover:bg-surface-container-lowest transition-colors">
+                        <td class="py-4 px-6">
+                            <div class="text-sm font-semibold text-on-surface">R-ID: <span th:text="${r.id}"></span></div>
+                            <div class="text-[12px] text-on-surface-variant">B-ID: <span th:text="${r.bookingId}"></span></div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="text-sm font-bold text-on-surface" th:text="${r.customerName}"></div>
+                            <div class="text-[12px] text-on-surface-variant" th:text="${r.customerEmail}"></div>
+                        </td>
+                        <td class="py-4 px-6 text-sm font-bold text-primary" th:text="${r.packageName}"></td>
+                        <td class="py-4 px-6">
+                            <div class="text-[11px] uppercase tracking-wider font-bold text-outline-variant">Bank</div>
+                            <div class="text-sm font-semibold text-on-surface mb-1" th:text="${r.bankName}"></div>
+                            
+                            <div class="text-[11px] uppercase tracking-wider font-bold text-outline-variant">Account</div>
+                            <div class="text-sm font-semibold text-on-surface" th:text="${r.accountNumber}"></div>
+                            <div class="text-[12px] text-on-surface-variant" th:text="${r.accountHolderName}"></div>
+                            <div class="text-[12px] text-on-surface-variant" th:text="'Branch: ' + ${r.branchName}"></div>
+                        </td>
+                        <td class="py-4 px-6 text-[13px] text-on-surface-variant max-w-[200px] truncate" th:title="${r.note}" th:text="${r.note}"></td>
+                        <td class="py-4 px-6">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-green-100 text-green-800" th:if="${r.refundStatus == 'Completed'}">
+                                <span class="material-symbols-outlined text-[14px]">done_all</span> <span th:text="${r.refundStatus}"></span>
+                            </span>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-yellow-100 text-yellow-800" th:if="${r.refundStatus != 'Completed'}">
+                                <span class="material-symbols-outlined text-[14px]">pending</span> <span th:text="${r.refundStatus}"></span>
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-center">
+                            <span th:if="${r.refundStatus == 'Completed'}" class="text-xs font-bold text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200">
+                                Refund Done
+                            </span>
+
+                            <a th:if="${r.refundStatus != 'Completed'}"
+                               th:href="@{'/refund/complete/' + ${r.id}}"
+                               class="inline-block bg-primary text-on-primary py-1.5 px-3 rounded-lg text-xs font-bold hover:bg-primary-container transition-colors shadow-sm whitespace-nowrap"
+                               onclick="return confirm('Mark this refund as completed?');">
+                                Mark Done
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
