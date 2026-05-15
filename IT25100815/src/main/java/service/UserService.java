@@ -53,6 +53,6 @@ public class UserService {
             }
         }
 
-        return null; // Return null if user not found or password wrong
+        return null; // if user not found or password wrong
     }
 }
