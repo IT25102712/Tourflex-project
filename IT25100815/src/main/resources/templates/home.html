@@ -62,34 +62,47 @@
     </div>
 
     <!-- Floating Search Bar -->
-    <div class="absolute bottom-8 left-1/2 z-20 w-full max-w-3xl search-bar-anim" style="padding: 0 20px;">
-        <div class="bg-white/95 backdrop-blur-xl p-5 rounded-2xl shadow-[0_16px_40px_rgba(0,0,0,0.15)] flex flex-col md:flex-row items-center gap-4 border border-white/40">
-            <div class="flex-1 w-full grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div class="flex flex-col gap-1 px-3 border-r border-outline-variant/30">
-                    <span class="text-[10px] uppercase tracking-widest font-bold text-outline">Destination</span>
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-sm">location_on</span>
-                        <input class="bg-transparent border-none p-0 focus:ring-0 text-on-surface text-sm font-bold placeholder:text-outline/50 w-full" placeholder="Where to go?" type="text"/>
+    <div class="absolute bottom-8 left-1/2 z-20 w-full max-w-2xl search-bar-anim" style="padding: 0 20px;">
+        <div class="bg-white/95 backdrop-blur-xl px-5 py-3.5 rounded-2xl shadow-[0_12px_32px_rgba(0,0,0,0.12)] border border-white/40 relative">
+            <div class="flex flex-col md:flex-row items-center gap-3">
+                <div class="flex-1 w-full grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <div class="flex flex-col gap-1 px-3 border-r border-outline-variant/30 relative">
+                        <span class="text-[10px] uppercase tracking-widest font-bold text-outline">Destination</span>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-sm">location_on</span>
+                            <input id="searchLocation" class="bg-transparent border-none p-0 focus:ring-0 text-on-surface text-sm font-bold placeholder:text-outline/50 w-full" placeholder="Where to go?" type="text" autocomplete="off" oninput="onLocationInput(this.value)" onfocus="onLocationInput(this.value)"/>
+                        </div>
+                        <!-- Location Dropdown -->
+                        <div id="locationDropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-outline-variant/20 z-50 max-h-48 overflow-y-auto">
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1 px-3 border-r border-outline-variant/30">
+                        <span class="text-[10px] uppercase tracking-widest font-bold text-outline">Travel Date</span>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-sm">calendar_month</span>
+                            <input id="searchDate" class="bg-transparent border-none p-0 focus:ring-0 text-on-surface text-sm font-bold placeholder:text-outline/50 w-full cursor-pointer" placeholder="Select date" type="date"/>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1 px-3">
+                        <span class="text-[10px] uppercase tracking-widest font-bold text-outline">Guests</span>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-sm">group</span>
+                            <input id="searchGuests" class="bg-transparent border-none p-0 focus:ring-0 text-on-surface text-sm font-bold placeholder:text-outline/50 w-full" placeholder="How many?" type="number" min="1" max="50"/>
+                        </div>
                     </div>
                 </div>
-                <div class="flex flex-col gap-1 px-3 border-r border-outline-variant/30">
-                    <span class="text-[10px] uppercase tracking-widest font-bold text-outline">Travel Date</span>
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-sm">calendar_month</span>
-                        <input class="bg-transparent border-none p-0 focus:ring-0 text-on-surface text-sm font-bold placeholder:text-outline/50 w-full" placeholder="Select dates" type="text"/>
-                    </div>
-                </div>
-                <div class="flex flex-col gap-1 px-3">
-                    <span class="text-[10px] uppercase tracking-widest font-bold text-outline">Guests</span>
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-sm">group</span>
-                        <input class="bg-transparent border-none p-0 focus:ring-0 text-on-surface text-sm font-bold placeholder:text-outline/50 w-full" placeholder="Add guests" type="text"/>
-                    </div>
-                </div>
+                <button onclick="performSearch()" class="bg-primary text-on-primary p-3 rounded-xl hover:bg-primary-container transition-all shrink-0 shadow-md hover:shadow-lg hover:-translate-y-0.5 duration-300">
+                    <span class="material-symbols-outlined text-[20px]">search</span>
+                </button>
             </div>
-            <button class="bg-primary text-on-primary p-4 rounded-xl hover:bg-primary-container transition-all shrink-0 shadow-lg hover:shadow-xl hover:-translate-y-1 duration-300">
-                <span class="material-symbols-outlined">search</span>
-            </button>
+            <!-- Search Results -->
+            <div id="searchResults" class="hidden mt-3 pt-3 border-t border-outline-variant/20">
+                <div class="flex items-center justify-between mb-3">
+                    <span id="resultCount" class="text-xs font-bold text-on-surface-variant uppercase tracking-wider"></span>
+                    <button onclick="closeResults()" class="text-outline hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[18px]">close</span></button>
+                </div>
+                <div id="resultsList" class="space-y-1.5 max-h-52 overflow-y-auto"></div>
+            </div>
         </div>
     </div>
 </section>
@@ -181,6 +194,95 @@
         </div>
     </div>
 </section>
+
+<!-- Search Functionality -->
+<script>
+    let searchTimeout;
+    function onLocationInput(val) {
+        clearTimeout(searchTimeout);
+        const dd = document.getElementById('locationDropdown');
+        if (val.length === 0) {
+            // Show all locations on focus
+            searchTimeout = setTimeout(() => {
+                fetch('/api/locations?q=')
+                    .then(r => r.json())
+                    .then(locs => renderLocations(locs));
+            }, 100);
+            return;
+        }
+        searchTimeout = setTimeout(() => {
+            fetch('/api/locations?q=' + encodeURIComponent(val))
+                .then(r => r.json())
+                .then(locs => renderLocations(locs));
+        }, 200);
+    }
+
+    function renderLocations(locs) {
+        const dd = document.getElementById('locationDropdown');
+        if (locs.length === 0) { dd.classList.add('hidden'); return; }
+        dd.innerHTML = locs.map(l =>
+            `<div class="px-4 py-3 hover:bg-surface-container-low cursor-pointer text-sm font-semibold text-on-surface flex items-center gap-2 transition-colors"
+                  onclick="selectLocation('${l}')">
+                <span class="material-symbols-outlined text-primary text-[16px]">location_on</span>${l}
+            </div>`
+        ).join('');
+        dd.classList.remove('hidden');
+    }
+
+    function selectLocation(loc) {
+        document.getElementById('searchLocation').value = loc;
+        document.getElementById('locationDropdown').classList.add('hidden');
+    }
+
+    function performSearch() {
+        const loc = document.getElementById('searchLocation').value;
+        const guests = document.getElementById('searchGuests').value || 0;
+        fetch(`/api/search-packages?location=${encodeURIComponent(loc)}&guests=${guests}`)
+            .then(r => r.json())
+            .then(pkgs => {
+                const results = document.getElementById('searchResults');
+                const list = document.getElementById('resultsList');
+                const count = document.getElementById('resultCount');
+                if (pkgs.length === 0) {
+                    count.textContent = 'No packages found';
+                    list.innerHTML = '<p class="text-center text-on-surface-variant text-sm py-4">Try a different destination or fewer guests.</p>';
+                } else {
+                    count.textContent = pkgs.length + ' package' + (pkgs.length > 1 ? 's' : '') + ' found';
+                    list.innerHTML = pkgs.map(p =>
+                        `<a href="/packages/details/${p.id}" class="flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container-low transition-all group no-underline border border-transparent hover:border-outline-variant/20">
+                            <img src="/images/${p.imageName}" alt="${p.location}" class="w-16 h-16 rounded-lg object-cover shrink-0 group-hover:scale-105 transition-transform"/>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-sm font-bold text-primary truncate">${p.name}</div>
+                                <div class="text-xs text-on-surface-variant flex items-center gap-1 mt-0.5">
+                                    <span class="material-symbols-outlined text-[12px]">location_on</span>${p.location}
+                                    <span class="mx-1 text-outline-variant">·</span>
+                                    <span class="material-symbols-outlined text-[12px]">schedule</span>${p.days} days
+                                    <span class="mx-1 text-outline-variant">·</span>
+                                    <span class="material-symbols-outlined text-[12px]">group</span>Up to ${p.maxPeople}
+                                </div>
+                            </div>
+                            <div class="text-sm font-bold text-secondary-container whitespace-nowrap">LKR ${p.price.toLocaleString()}</div>
+                        </a>`
+                    ).join('');
+                }
+                results.classList.remove('hidden');
+                document.getElementById('locationDropdown').classList.add('hidden');
+            });
+    }
+
+    function closeResults() {
+        document.getElementById('searchResults').classList.add('hidden');
+    }
+
+    // Close dropdown on outside click
+    document.addEventListener('click', (e) => {
+        const dd = document.getElementById('locationDropdown');
+        const input = document.getElementById('searchLocation');
+        if (!dd.contains(e.target) && e.target !== input) {
+            dd.classList.add('hidden');
+        }
+    });
+</script>
 
 <!-- Hero Slider Script -->
 <script>

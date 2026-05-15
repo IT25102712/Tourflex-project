@@ -7,12 +7,15 @@
 <!-- TopNavBar -->
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<div class="flex-1 flex items-center justify-center py-24 px-margin-mobile">
-    <div class="w-full max-w-lg bg-white p-10 rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20 mt-12">
-        <div class="text-center mb-8">
-            <h2 class="text-headline-md font-headline-md text-on-background">Edit Your Profile</h2>
-            <p class="text-body-md text-on-surface-variant mt-2">Update your personal information</p>
-        </div>
+<div class="bg-primary pt-32 pb-16 px-margin-mobile">
+    <div class="max-w-[1280px] mx-auto text-center">
+        <h1 class="text-display-lg-mobile font-display-lg md:text-display-lg text-white mb-4">Edit Profile</h1>
+        <p class="text-body-lg text-white/80">Update your personal information and security settings.</p>
+    </div>
+</div>
+
+<div class="flex-1 flex items-center justify-center py-12 px-margin-mobile">
+    <div class="w-full max-w-lg bg-white p-10 rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20">
 
         <form th:action="@{/user/update}" th:object="${user}" method="post" onsubmit="return validateEdit()" class="flex flex-col gap-4">
             <input type="hidden" th:field="*{id}" />

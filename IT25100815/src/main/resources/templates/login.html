@@ -9,9 +9,16 @@
         <div class="text-center mb-8">
             <a th:href="@{/}" class="text-headline-md font-headline-md font-extrabold tracking-tight text-primary inline-block mb-2 no-underline hover:text-primary-container transition-colors">TOURFLEX</a>
             <h2 class="text-headline-sm font-headline-md text-on-background mt-2">Welcome Back</h2>
-            <p class="text-body-md text-on-surface-variant mt-2">Log in to continue planning your Sri Lankan adventure.</p>
+            <p class="text-body-md text-on-surface-variant mt-2">Log in to continue your journey.</p>
         </div>
 
+        <!-- Success message (e.g. after registration) -->
+        <div th:if="${message}" class="bg-primary/10 text-primary p-4 rounded-xl mb-6 text-sm font-label-md flex items-start gap-2">
+            <span class="material-symbols-outlined text-sm mt-0.5">check_circle</span>
+            <p th:text="${message}" class="m-0"></p>
+        </div>
+
+        <!-- Error message -->
         <div th:if="${error}" class="bg-error-container text-on-error-container p-4 rounded-xl mb-6 text-sm font-label-md flex items-start gap-2">
             <span class="material-symbols-outlined text-sm mt-0.5">error</span>
             <p th:text="${error}" class="m-0"></p>
@@ -19,10 +26,10 @@
 
         <form action="/user/login" method="post" onsubmit="return validateLogin()" class="flex flex-col gap-5">
             <div>
-                <label for="email" class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Email</label>
+                <label for="email" class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Email Address</label>
                 <div class="relative">
-                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">mail</span>
-                    <input type="email" id="email" name="email" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant" placeholder="name@example.com" required>
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">person</span>
+                    <input type="text" id="email" name="email" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant" placeholder="you@example.com" required>
                 </div>
             </div>
             
@@ -31,6 +38,9 @@
                 <div class="relative">
                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">lock</span>
                     <input type="password" id="password" name="password" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant" placeholder="••••••••" required>
+                    <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant hover:text-primary transition-colors">
+                        <span id="eyeIcon" class="material-symbols-outlined text-[20px]">visibility_off</span>
+                    </button>
                 </div>
             </div>
 
@@ -59,12 +69,25 @@
 
 <script>
     function validateLogin() {
-        let email = document.getElementById("email").value.trim();
-        if (!email.includes("@")) {
-            alert("Please enter a valid email address");
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+        if (!email || !password) {
+            alert("Please fill in all fields.");
             return false;
         }
         return true;
+    }
+
+    function togglePassword() {
+        let passwordField = document.getElementById("password");
+        let eyeIcon = document.getElementById("eyeIcon");
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            eyeIcon.textContent = "visibility";
+        } else {
+            passwordField.type = "password";
+            eyeIcon.textContent = "visibility_off";
+        }
     }
 </script>
 
