@@ -35,19 +35,19 @@ public class UserController {
     @Autowired
     private com.tourflex.service.ReviewService reviewService;
 
-    // REGISTER PAGE
+    // reg page
     @GetMapping("/register-page")
     public String showRegisterPage() {
         return "register";
     }
 
-    // LOGIN PAGE
+    // login
     @GetMapping("/login-page")
     public String showLoginPage() {
         return "login";
     }
 
-    // REGISTER USER
+    // reg
     @PostMapping("/register")
     public String registerUser(@RequestParam String name,
                                @RequestParam String email,
@@ -56,20 +56,20 @@ public class UserController {
                                @RequestParam String address,
                                Model model) {
 
-        // Email Validation @gmail.com
+        // @gmail.com check
         if (!email.toLowerCase().endsWith("@gmail.com")) {
             model.addAttribute("error", "Invalid email address");
             return "register";
         }
 
-        // Phone Validation (Must be exactly 10 digits, start with 0)
+        // phone validation 10 digit start from 0
         if (phone.length() != 10 || !phone.matches("^0\\d{9}$")) {
             model.addAttribute("error", "Phone number must be exactly 10 digits. Start with 0");
             return "register";
         }
 
-        // Password validation (Letters + Numbers + Symbols)
-        // requires: 1 Letter, 1 Number, 1 Symbol, and min 6 chars
+        // Password validation
+        // 1 lett, 1 num, 1 sym, and min 6 chars
         String passRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&]).{6,}$";
         if (!password.matches(passRegex)) {
             model.addAttribute("error", "Password must be 6+ characters with a mixture of letters, numbers, and symbols.");
@@ -77,9 +77,8 @@ public class UserController {
         }
 
         if (userService.findByEmail(email).isPresent()) {
-            // 2. If it exists, send an error message to the UI
             model.addAttribute("error", "Email is already registered!");
-            return "register"; // Return back to the registration page
+            return "register"; // return reg page
         }
 
         // Save user
@@ -101,7 +100,6 @@ public class UserController {
         return "login";
     }
 
-    // USER LOGIN - handles only regular users
     @PostMapping("/login")
     public String loginUser(@RequestParam String email,
                             @RequestParam String password,
@@ -112,7 +110,7 @@ public class UserController {
             return "login";
         }
 
-        // Regular user login only
+        // login credential check
         User user = userService.login(email, password);
         if(user != null){
             session.setAttribute("user", user);
@@ -124,13 +122,15 @@ public class UserController {
 
     }
 
+    // user profile
     @GetMapping("/profile")
     public String showProfile(HttpSession session, Model model) {
         User loggedInUser = (User) session.getAttribute("user");
         if (loggedInUser == null) {
             return "redirect:/user/login-page"; // Redirect if not logged in
         }
-        // Refresh user from DB to get latest data
+
+        // update latest data after refreshing the page
         Optional<User> freshUser = userService.findById(loggedInUser.getId());
         User userToUse;
         if (freshUser.isPresent()) {
@@ -143,11 +143,11 @@ public class UserController {
         model.addAttribute("user", userToUse);
         model.addAttribute("savedCards", savedCardService.getCardsByEmail(userToUse.getEmail()));
 
-        // User's bookings for profile view
+        // booking in user
         List<Booking> userBookings = bookingService.getBookingsByEmail(userToUse.getEmail());
         model.addAttribute("userBookings", userBookings);
 
-        // Calculate total spent and trips based on payment status
+        // spent amount
         long paidTrips = userBookings.stream()
                 .filter(b -> "Paid".equals(b.getBookingStatus()) || "Refund Requested".equals(b.getBookingStatus()))
                 .count();
@@ -170,12 +170,12 @@ public class UserController {
 
     @GetMapping("/edit")
     public String showEditForm(HttpSession session, Model model) {
-        // Get the logged-in user from the session
+        // login check
         User user = (User) session.getAttribute("user");
 
         if (user != null) {
             model.addAttribute("user", user);
-            return "edit-user"; // Make sure this matches your HTML filename
+            return "edit-user";
         } else {
             return "redirect:/user/login-page";
         }
@@ -202,7 +202,7 @@ public class UserController {
         Optional<User> user = userService.findById(id);
         if (user.isPresent() && user.get().getImage() != null) {
             return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG) // Or IMAGE_PNG
+                    .contentType(MediaType.IMAGE_JPEG) // or png image
                     .body(user.get().getImage());
         }
         return ResponseEntity.notFound().build();
@@ -212,7 +212,7 @@ public class UserController {
     public String updateUser(@ModelAttribute("user") User user, HttpSession session) {
         User sessionUser = (User) session.getAttribute("user");
         if (sessionUser != null) {
-            // Preserve the image from session since form doesn't send it
+            // image set to user
             user.setImage(sessionUser.getImage());
         }
         userService.updateUser(user);
@@ -220,7 +220,6 @@ public class UserController {
         return "redirect:/user/profile";
     }
 
-    // FIXED: Changed from GET to POST for delete operation
     @PostMapping("/delete")
     public String deleteUser(HttpSession session) {
         User user = (User) session.getAttribute("user");
@@ -231,7 +230,6 @@ public class UserController {
         return "redirect:/"; // back to home page
     }
 
-    // LOGOUT
     @GetMapping("/logout")
     public String logout(HttpSession session){
         session.removeAttribute("user");
