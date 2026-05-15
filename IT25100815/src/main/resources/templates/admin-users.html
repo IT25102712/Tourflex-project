@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Manage Users - TOURFLEX')}"></head>
+
+<body class="bg-[#f5f6f8] min-h-screen flex flex-col" style="font-family:'Plus Jakarta Sans',sans-serif;">
+
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: admin-navbar}"></nav>
+
+<div class="bg-[#002155] pt-32 pb-16 px-5">
+    <div class="max-w-[1280px] mx-auto">
+        <h1 class="text-[32px] font-bold text-white mb-1">Users</h1>
+        <p class="text-[14px] text-white/60">All registered platform accounts</p>
+    </div>
+</div>
+
+<main class="flex-1 max-w-[1280px] mx-auto px-5 lg:px-8 py-8 w-full">
+
+    <div class="flex items-center justify-between mb-5">
+        <p class="text-[13px] text-[#6b7280] font-medium" th:text="${users != null ? users.size() : 0} + ' users total'">0 users total</p>
+    </div>
+
+    <div th:if="${users != null and !users.isEmpty()}" class="bg-white rounded-xl border border-[#e8eaed] overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-[#e8eaed]">
+                        <th class="py-3 px-5 text-[11px] font-semibold text-[#9ca3af] uppercase tracking-wider">ID</th>
+                        <th class="py-3 px-5 text-[11px] font-semibold text-[#9ca3af] uppercase tracking-wider">Name</th>
+                        <th class="py-3 px-5 text-[11px] font-semibold text-[#9ca3af] uppercase tracking-wider">Email</th>
+                        <th class="py-3 px-5 text-[11px] font-semibold text-[#9ca3af] uppercase tracking-wider">Phone</th>
+                        <th class="py-3 px-5 text-[11px] font-semibold text-[#9ca3af] uppercase tracking-wider">Address</th>
+                        <th class="py-3 px-5 text-[11px] font-semibold text-[#9ca3af] uppercase tracking-wider text-center w-20"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="u : ${users}" class="border-b border-[#f3f4f6] last:border-0 hover:bg-[#f9fafb] transition-colors">
+                        <td class="py-3 px-5 text-[13px] text-[#9ca3af] font-medium" th:text="${u.id}"></td>
+                        <td class="py-3 px-5">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-7 h-7 rounded-full bg-[#002155]/8 text-[#002155] flex items-center justify-center text-[11px] font-bold shrink-0">
+                                    <span th:text="${#strings.substring(u.name, 0, 1)}">U</span>
+                                </div>
+                                <span class="text-[13px] font-semibold text-[#111827]" th:text="${u.name}">Name</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-5 text-[13px] text-[#6b7280]" th:text="${u.email}"></td>
+                        <td class="py-3 px-5 text-[13px] text-[#6b7280]" th:text="${u.phone}"></td>
+                        <td class="py-3 px-5 text-[13px] text-[#6b7280] max-w-[180px] truncate" th:text="${u.address}"></td>
+                        <td class="py-3 px-5 text-center">
+                            <a th:href="@{'/admin/users/delete/' + ${u.id}}"
+                               class="text-[#9ca3af] hover:text-[#ef4444] transition-colors"
+                               title="Delete"
+                               onclick="return confirm('Delete this user?');">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:if="${users == null or users.isEmpty()}" class="text-center py-16 bg-white rounded-xl border border-[#e8eaed]">
+        <span class="material-symbols-outlined text-[#d1d5db] text-[36px] mb-3">group_off</span>
+        <p class="text-[14px] font-semibold text-[#374151] mb-1">No users found</p>
+        <p class="text-[12px] text-[#9ca3af]">No users have registered yet.</p>
+    </div>
+
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

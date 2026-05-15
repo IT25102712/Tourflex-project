@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin Login - TOURFLEX')}"></head>
+
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col items-center justify-center">
+
+<div class="w-full max-w-md bg-white p-10 rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/20 relative overflow-hidden">
+    
+    <!-- Decorative top bar -->
+    <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary to-primary-container"></div>
+    
+    <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-surface-container-high text-primary mb-4 shadow-sm">
+            <span class="material-symbols-outlined text-[32px]">admin_panel_settings</span>
+        </div>
+        <h2 class="text-headline-md font-headline-md text-on-background">Admin Portal</h2>
+        <p class="text-body-md text-on-surface-variant mt-2">Sign in to manage Tourflex platform</p>
+    </div>
+
+    <div class="mb-6 bg-error-container text-on-error-container p-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2" th:if="${param.error}">
+        <span class="material-symbols-outlined text-[18px]">error</span> Invalid admin credentials!
+    </div>
+
+    <form action="/admin/login" method="post" class="flex flex-col gap-4">
+        <div>
+            <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Admin Username</label>
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">shield_person</span>
+                <input type="text" name="username" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" required placeholder="Enter username">
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Password</label>
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">key</span>
+                <input type="password" name="password" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all" required placeholder="Enter password">
+            </div>
+        </div>
+
+        <button type="submit" class="w-full bg-primary text-on-primary py-3.5 rounded-xl font-label-md hover:bg-primary-container transition-all shadow-md mt-2 flex justify-center items-center gap-2">
+            Login to Dashboard <span class="material-symbols-outlined text-[20px]">login</span>
+        </button>
+    </form>
+    
+    <div class="mt-8 text-center border-t border-outline-variant/20 pt-6">
+        <a th:href="@{/}" class="text-sm text-primary font-bold hover:underline inline-flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">arrow_back</span> Return to Main Site
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

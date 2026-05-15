@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Register - TOURFLEX')}"></head>
+
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col md:flex-row-reverse">
+
+<div class="flex-1 flex items-center justify-center p-8 bg-surface relative z-10">
+    <div class="w-full max-w-lg bg-white p-10 rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20">
+        <div class="text-center mb-8">
+            <a th:href="@{/}" class="text-headline-md font-headline-md font-extrabold tracking-tight text-primary inline-block mb-2 no-underline hover:text-primary-container transition-colors">TOURFLEX</a>
+            <h2 class="text-headline-sm font-headline-md text-on-background mt-2">Create Account</h2>
+            <p class="text-body-md text-on-surface-variant mt-2">Join us to craft your perfect Sri Lankan experience.</p>
+        </div>
+
+        <div th:if="${error}" class="bg-error-container text-on-error-container p-4 rounded-xl mb-6 text-sm font-label-md flex items-start gap-2">
+            <span class="material-symbols-outlined text-sm mt-0.5">error</span>
+            <p th:text="${error}" class="m-0"></p>
+        </div>
+
+        <form th:action="@{/user/register}" method="post" onsubmit="return validateRegister()" class="flex flex-col gap-4">
+
+            <div>
+                <label for="name" class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Full Name</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">person</span>
+                    <input type="text" id="name" name="name" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant" placeholder="John Doe" required>
+                </div>
+            </div>
+
+            <div>
+                <label for="email" class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Email</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">mail</span>
+                    <input type="email" id="email" name="email" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant" placeholder="name@gmail.com" required>
+                </div>
+                <div id="emailError" class="text-error text-xs font-semibold mt-1 ml-1 hidden"></div>
+            </div>
+
+            <div>
+                <label for="password" class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Password</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">lock</span>
+                    <input type="password" id="password" name="password" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant" placeholder="••••••••" required>
+                </div>
+                <div id="passwordError" class="text-error text-xs font-semibold mt-1 ml-1 hidden"></div>
+            </div>
+
+            <div>
+                <label for="phone" class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Phone Number</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">call</span>
+                    <input type="text" id="phone" name="phone" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant" placeholder="07XXXXXXXX" required>
+                </div>
+                <div id="phoneError" class="text-error text-xs font-semibold mt-1 ml-1 hidden"></div>
+            </div>
+
+            <div>
+                <label for="address" class="block text-label-md text-on-surface-variant mb-1.5 ml-1">Residential Address</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">home</span>
+                    <input type="text" id="address" name="address" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant" placeholder="Colombo, Sri Lanka" required>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-primary text-on-primary py-4 rounded-xl font-label-md hover:bg-primary-container transition-all mt-4 shadow-md flex justify-center items-center gap-2 group">
+                Create Account
+                <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </button>
+        </form>
+
+        <div class="mt-8 text-center text-sm font-label-md text-on-surface-variant">
+            Already have an account? <a th:href="@{/user/login-page}" class="text-secondary-container hover:text-secondary transition-colors font-bold ml-1">Log in</a>
+        </div>
+    </div>
+</div>
+
+<div class="hidden md:flex flex-1 relative overflow-hidden bg-tertiary">
+    <img src="https://images.unsplash.com/photo-1586884542514-f5c762fe9dc5?auto=format&fit=crop&w=1200&q=80" alt="Sri Lankan Tea Fields" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50">
+    <div class="absolute inset-0 bg-gradient-to-t from-tertiary via-tertiary/40 to-transparent"></div>
+    <div class="absolute bottom-20 left-16 right-16">
+        <div class="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20">
+            <span class="material-symbols-outlined text-secondary-container text-4xl mb-4">verified</span>
+            <h3 class="text-display-lg-mobile text-white font-bold mb-4 text-balance">Trusted by travelers worldwide.</h3>
+            <p class="text-white/80 text-body-lg text-balance">Join our community and get access to exclusive, eco-conscious travel packages.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function validateRegister() {
+        let email = document.getElementById("email");
+        let password = document.getElementById("password");
+        let phone = document.getElementById("phone");
+
+        let emailError = document.getElementById("emailError");
+        let passwordError = document.getElementById("passwordError");
+        let phoneError = document.getElementById("phoneError");
+
+        emailError.style.display = "none";
+        passwordError.style.display = "none";
+        phoneError.style.display = "none";
+        
+        email.classList.remove("border-error", "ring-error");
+        password.classList.remove("border-error", "ring-error");
+        phone.classList.remove("border-error", "ring-error");
+
+        let isValid = true;
+
+        if (!email.value.trim().endsWith("@gmail.com")) {
+            emailError.innerText = "Only @gmail.com addresses are allowed.";
+            emailError.style.display = "block";
+            email.classList.add("border-error", "ring-error");
+            isValid = false;
+        }
+
+        if (phone.value.trim().length !== 10 || isNaN(phone.value.trim())) {
+            phoneError.innerText = "Phone number must be exactly 10 digits starting with 0.";
+            phoneError.style.display = "block";
+            phone.classList.add("border-error", "ring-error");
+            isValid = false;
+        }
+
+        let passRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{6,}$/;
+        if (!passRegex.test(password.value)) {
+            passwordError.innerText = "6+ characters with a mixture of letters, numbers, and symbols.";
+            passwordError.style.display = "block";
+            password.classList.add("border-error", "ring-error");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+</script>
+
+</body>
+</html>
