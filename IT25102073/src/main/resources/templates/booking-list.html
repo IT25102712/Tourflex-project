@@ -1,90 +1,79 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <title>TOURFLEX - Bookings</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-    }
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin - Bookings')}"></head>
 
-    h1 {
-      text-align: center;
-      margin: 30px 0;
-    }
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
 
-    table {
-      width: 95%;
-      margin: 20px auto;
-      border-collapse: collapse;
-      background: white;
-    }
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: admin-navbar}"></nav>
 
-    th, td {
-      border: 1px solid #ccc;
-      padding: 12px;
-      text-align: center;
-    }
+<div class="bg-primary pt-32 pb-16 px-margin-mobile">
+    <div class="max-w-[1280px] mx-auto text-center">
+        <h1 class="text-display-lg-mobile font-display-lg md:text-display-lg text-white mb-4">All Bookings</h1>
+        <p class="text-body-lg text-white/80">Admin view of all customer bookings.</p>
+    </div>
+</div>
 
-    th {
-      background: #0d6efd;
-      color: white;
-    }
+<main class="flex-1 max-w-[1280px] mx-auto px-margin-desktop py-12 w-full">
 
-    .delete-btn {
-      background: #dc3545;
-      color: white;
-      padding: 8px 12px;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-    }
+    <div th:if="${bookings != null}" class="bg-white rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-surface-container-low text-on-surface-variant text-label-md uppercase tracking-wider border-b border-outline-variant/30">
+                        <th class="py-4 px-6 font-bold">ID</th>
+                        <th class="py-4 px-6 font-bold">Customer</th>
+                        <th class="py-4 px-6 font-bold">Package</th>
+                        <th class="py-4 px-6 font-bold">Date / Location</th>
+                        <th class="py-4 px-6 font-bold">Guests</th>
+                        <th class="py-4 px-6 font-bold">Total Price</th>
+                        <th class="py-4 px-6 font-bold">Status</th>
+                        <th class="py-4 px-6 font-bold text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/20">
+                <tr th:each="b, iterStat : ${bookings}" class="hover:bg-surface-container-lowest transition-colors">
 
-    .delete-btn:hover {
-      background: #bb2d3b;
-    }
-  </style>
-</head>
-<body>
+                    <td class="py-4 px-6 text-sm font-semibold text-on-surface" th:text="${iterStat.count}"></td>
 
-<h1>All Bookings</h1>
+                    <td class="py-4 px-6">
+                        <div class="text-sm font-bold text-on-surface" th:text="${b.customerName}"></div>
+                        <div class="text-[12px] text-on-surface-variant" th:text="${b.customerEmail}"></div>
+                    </td>
+                    <td class="py-4 px-6 text-sm font-bold text-primary" th:text="${b.packageName}"></td>
+                    <td class="py-4 px-6">
+                        <div class="text-sm font-semibold text-on-surface" th:text="${b.location}"></div>
+                        <div class="text-[12px] text-on-surface-variant" th:text="${b.bookingDate}"></div>
+                    </td>
+                    <td class="py-4 px-6 text-sm text-on-surface-variant text-center" th:text="${b.numberOfPeople}"></td>
+                    <td class="py-4 px-6 text-sm font-bold text-secondary-container whitespace-nowrap" th:text="'Rs. ' + ${b.totalPrice}"></td>
+                    <td class="py-4 px-6">
+                        <div class="flex flex-col gap-1">
+                <span class="inline-flex items-center w-fit px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-surface-container-high text-on-surface">
+                    B: <span th:text="${b.bookingStatus}" class="ml-1"></span>
+                </span>
+                            <span class="inline-flex items-center w-fit px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-surface-container-high text-on-surface">
+                    R: <span th:text="${b.refundStatus}" class="ml-1"></span>
+                </span>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 text-center">
+                        <a th:href="@{'/booking/delete/' + ${b.id}}"
+                           onclick="return confirm('Are you sure you want to delete this booking permanently?');"
+                           class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-error-container text-on-error-container hover:bg-error-container/80 transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<table>
-  <tr>
-    <th>ID</th>
-    <th>Name</th>
-    <th>Email</th>
-    <th>Package</th>
-    <th>Location</th>
-    <th>Date</th>
-    <th>People</th>
-    <th>Total Price</th>
-    <th>Status</th>
-    <th>Refund</th>
-    <th>Action</th>
-  </tr>
+</main>
 
-  <tr th:each="b : ${bookings}">
-    <td th:text="${b.id}"></td>
-    <td th:text="${b.customerName}"></td>
-    <td th:text="${b.customerEmail}"></td>
-    <td th:text="${b.packageName}"></td>
-    <td th:text="${b.location}"></td>
-    <td th:text="${b.bookingDate}"></td>
-    <td th:text="${b.numberOfPeople}"></td>
-    <td th:text="${b.totalPrice}"></td>
-    <td th:text="${b.bookingStatus}"></td>
-    <td th:text="${b.refundStatus}"></td>
-    <td>
-      <a th:href="@{'/booking/delete/' + ${b.id}}"
-         class="delete-btn"
-         onclick="return confirm('Delete this booking?');">
-        Delete
-      </a>
-    </td>
-  </tr>
-</table>
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 
 </body>
 </html>

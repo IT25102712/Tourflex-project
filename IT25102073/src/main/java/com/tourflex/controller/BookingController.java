@@ -28,52 +28,42 @@ public class BookingController {
     @Autowired
     private CustomPackageService customPackageService;
 
-    // BOOK NORMAL PACKAGE - LOGIN REQUIRED
+    // 1. BOOK NORMAL PACKAGE
     @GetMapping("/book/{id}")
-    public String showBookingPage(@PathVariable int id,
-                                  Model model,
-                                  HttpSession session) {
-
+    public String showBookingPage(@PathVariable int id, Model model, HttpSession session) {
         if (session.getAttribute("user") == null) {
             return "redirect:/user/login-page";
         }
-
+        User user = (User) session.getAttribute("user");
         TourPackage tourPackage = tourPackageRepository.findById(id).orElse(null);
         model.addAttribute("pkg", tourPackage);
+        model.addAttribute("loggedInUser", user);
         return "booking";
     }
 
-    // BOOK CUSTOM PACKAGE - LOGIN REQUIRED
+    // 2. BOOK CUSTOM PACKAGE
     @GetMapping("/custom/{id}")
-    public String showCustomBookingPage(@PathVariable int id,
-                                        Model model,
-                                        HttpSession session) {
-
+    public String showCustomBookingPage(@PathVariable int id, Model model, HttpSession session) {
         if (session.getAttribute("user") == null) {
             return "redirect:/user/login-page";
         }
-
+        User user = (User) session.getAttribute("user");
         CustomPackage customPackage = customPackageService.getCustomPackageById(id);
         model.addAttribute("customPkg", customPackage);
+        model.addAttribute("loggedInUser", user);
         return "booking-custom";
     }
 
-    // SAVE BOOKING - LOGIN REQUIRED
+    // 3. SAVE BOOKING
     @PostMapping("/save")
-    public String saveBooking(@RequestParam String customerName,
-                              @RequestParam String customerEmail,
-                              @RequestParam String bookingDate,
-                              @RequestParam int numberOfPeople,
-                              @RequestParam String packageName,
-                              @RequestParam String location,
-                              @RequestParam double totalPrice,
-                              Model model,
-                              HttpSession session) {
-
+    public String saveBooking(@RequestParam String customerName, @RequestParam String customerEmail,
+                              @RequestParam String bookingDate, @RequestParam int numberOfPeople,
+                              @RequestParam String packageName, @RequestParam String location,
+                              @RequestParam double totalPrice, @RequestParam(required = false, defaultValue = "0") int customPackageId,
+                              Model model, HttpSession session) {
         if (session.getAttribute("user") == null) {
             return "redirect:/user/login-page";
         }
-
         Booking booking = new Booking();
         booking.setCustomerName(customerName);
         booking.setCustomerEmail(customerEmail);
@@ -82,69 +72,59 @@ public class BookingController {
         booking.setPackageName(packageName);
         booking.setLocation(location);
         booking.setTotalPrice(totalPrice);
-
         bookingService.saveBooking(booking);
 
         model.addAttribute("booking", booking);
+        model.addAttribute("customPackageId", customPackageId);
         return "booking-success";
     }
 
-    // ADMIN VIEW ALL BOOKINGS
+    // 4. ADMIN VIEW ALL BOOKINGS (Meeka thama list eka pennanna use wenne)
     @GetMapping("/list")
     public String showBookings(Model model, HttpSession session) {
         if (session.getAttribute("admin") == null) {
             return "redirect:/admin/login";
         }
-
+        // Admin-ta okkoma bookings tika meken labenawa
         model.addAttribute("bookings", bookingService.getAllBookings());
         return "booking-list";
     }
 
-    // ADMIN DELETE BOOKING
+    // 5. ADMIN DELETE BOOKING
     @GetMapping("/delete/{id}")
     public String deleteBooking(@PathVariable int id, HttpSession session) {
         if (session.getAttribute("admin") == null) {
             return "redirect:/admin/login";
         }
-
         bookingService.deleteBooking(id);
-        return "redirect:/booking/list";
+        return "redirect:/admin/dashboard?tab=bookings";
     }
 
-    // LOGGED-IN USER SEES THEIR OWN BOOKINGS AUTOMATICALLY
+    // 6. USER SEE THEIR OWN BOOKINGS (Kalin hadapu filter logic eka meke thiyenawa)
     @GetMapping("/my-bookings")
     public String showMyBookingsPage(HttpSession session, Model model) {
         if (session.getAttribute("user") == null) {
             return "redirect:/user/login-page";
         }
-
         User user = (User) session.getAttribute("user");
-        List<Booking> bookings = bookingService.getBookingsByEmail(user.getEmail());
+
+        // Methana 'getActiveBookingsByEmail' use karana nisa 'Cancelled' ewa user-ta penne ne
+        List<Booking> bookings = bookingService.getActiveBookingsByEmail(user.getEmail());
 
         model.addAttribute("bookings", bookings);
         model.addAttribute("loggedInEmail", user.getEmail());
         return "my-bookings";
     }
 
-    // LOGGED-IN USER CANCELS THEIR BOOKING
+    // 7. USER CANCELS BOOKING
     @GetMapping("/cancel/{id}")
-    public String cancelBooking(@PathVariable int id,
-                                Model model,
-                                HttpSession session) {
-
+    public String cancelBooking(@PathVariable int id, HttpSession session,
+                                org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         if (session.getAttribute("user") == null) {
             return "redirect:/user/login-page";
         }
-
-        User user = (User) session.getAttribute("user");
-
         String message = bookingService.cancelBooking(id);
-        List<Booking> bookings = bookingService.getBookingsByEmail(user.getEmail());
-
-        model.addAttribute("bookings", bookings);
-        model.addAttribute("loggedInEmail", user.getEmail());
-        model.addAttribute("message", message);
-
-        return "my-bookings";
+        redirectAttributes.addFlashAttribute("message", message);
+        return "redirect:/booking/my-bookings";
     }
 }

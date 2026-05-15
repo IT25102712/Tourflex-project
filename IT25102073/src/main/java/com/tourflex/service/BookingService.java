@@ -16,9 +16,19 @@ public class BookingService {
     private BookingRepository bookingRepository;
 
     public Booking saveBooking(Booking booking) {
-        booking.setBookingStatus("Active");
-        booking.setRefundStatus("Not Requested");
+        if (booking.getBookingStatus() == null) {
+            booking.setBookingStatus("Pending");
+            booking.setRefundStatus("Not Requested");
+        }
         return bookingRepository.save(booking);
+    }
+
+    public void updateBookingStatus(int id, String status) {
+        Booking booking = bookingRepository.findById(id).orElse(null);
+        if (booking != null) {
+            booking.setBookingStatus(status);
+            bookingRepository.save(booking);
+        }
     }
 
     public List<Booking> getAllBookings() {
@@ -31,6 +41,9 @@ public class BookingService {
 
     public List<Booking> getBookingsByEmail(String email) {
         return bookingRepository.findByCustomerEmail(email);
+    }
+    public List<Booking> getActiveBookingsByEmail(String email) {
+        return bookingRepository.findActiveBookingsByEmail(email);
     }
 
     public Booking getBookingById(int id) {
@@ -48,18 +61,26 @@ public class BookingService {
             return "This booking is already cancelled.";
         }
 
-        LocalDate today = LocalDate.now();
-        LocalDate tripDate = LocalDate.parse(booking.getBookingDate());
+        try {
+            LocalDate today = LocalDate.now();
+            LocalDate tripDate = LocalDate.parse(booking.getBookingDate());
 
-        long daysBetween = ChronoUnit.DAYS.between(today, tripDate);
+            long daysBetween = ChronoUnit.DAYS.between(today, tripDate);
 
-        if (daysBetween >= 5) {
+            if (daysBetween >= 5) {
+                booking.setBookingStatus("Cancelled");
+                booking.setRefundStatus("Pending");
+                bookingRepository.save(booking);
+                return "Booking cancelled successfully. Refund status: Pending";
+            } else {
+                return "Cancellation not allowed. You can cancel only 5 days before the trip date.";
+            }
+        } catch (Exception e) {
+            // If date parsing fails, allow cancellation anyway
             booking.setBookingStatus("Cancelled");
             booking.setRefundStatus("Pending");
             bookingRepository.save(booking);
             return "Booking cancelled successfully. Refund status: Pending";
-        } else {
-            return "Cancellation not allowed. You can cancel only 5 days before the trip date.";
         }
     }
 

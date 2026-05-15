@@ -1,181 +1,153 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>TOURFLEX - My Bookings</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            margin: 0;
-        }
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Bookings - TOURFLEX')}"></head>
 
-        .navbar {
-            background: #0d6efd;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
 
-        .navbar .logo {
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-        }
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-        .navbar a {
-            color: white;
-            text-decoration: none;
-            margin-left: 20px;
-            font-weight: bold;
-        }
-
-        .container {
-            width: 95%;
-            max-width: 1100px;
-            margin: 30px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-        }
-
-        h2 {
-            text-align: center;
-        }
-
-        .message {
-            color: green;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .welcome {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-            font-weight: bold;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            margin-top: 20px;
-        }
-
-        th, td {
-            border: 1px solid #ccc;
-            padding: 12px;
-            text-align: center;
-        }
-
-        th {
-            background: #0d6efd;
-            color: white;
-        }
-
-        .cancel-btn {
-            background: #dc3545;
-            color: white;
-            padding: 8px 12px;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 6px;
-        }
-
-        .cancel-btn:hover {
-            background: #bb2d3b;
-        }
-
-        .refund-btn {
-            background: #198754;
-            color: white;
-            padding: 8px 12px;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-            display: inline-block;
-        }
-
-        .refund-btn:hover {
-            background: #157347;
-        }
-    </style>
-</head>
-<body>
-
-<div class="navbar">
-    <div class="logo">TOURFLEX</div>
-    <div>
-        <a href="/">Home</a>
-        <a href="/packages/list">Packages</a>
-        <a href="/review/add-page">Reviews</a>
-        <a href="/custom-package/create">Customize Package</a>
-        <a href="/custom-package/my">My Custom Packages</a>
-        <a href="/booking/my-bookings">My Bookings</a>
-        <a href="/user/logout">Logout</a>
+<div class="bg-primary pt-32 pb-16 px-margin-mobile">
+    <div class="max-w-[1280px] mx-auto text-center">
+        <h1 class="text-display-lg-mobile font-display-lg md:text-display-lg text-white mb-4">My Bookings</h1>
+        <p class="text-body-lg text-white/80">Manage your upcoming and past trips.</p>
     </div>
 </div>
 
-<div class="container">
-    <h2>My Bookings</h2>
-
-    <div class="welcome">
-        Logged in bookings for: <span th:text="${loggedInEmail}"></span>
+<main class="flex-1 max-w-[1280px] mx-auto px-margin-desktop py-12 w-full">
+    
+    <div class="mb-6 flex justify-between items-center bg-surface-container-low p-4 rounded-xl border border-outline-variant/30">
+        <div class="text-sm text-on-surface-variant font-medium">
+            Viewing bookings for: <span class="font-bold text-primary" th:text="${loggedInEmail}"></span>
+        </div>
     </div>
 
-    <div class="message" th:if="${message}" th:text="${message}"></div>
+    <div th:if="${message}" class="mb-8 bg-surface-container-high border-l-4 border-secondary-container text-on-surface p-4 rounded-r-lg font-label-md flex items-center shadow-sm">
+        <span class="material-symbols-outlined text-secondary-container mr-3">info</span>
+        <span th:text="${message}"></span>
+    </div>
 
-    <table th:if="${bookings != null}">
-        <tr>
-            <th>ID</th>
-            <th>Package</th>
-            <th>Location</th>
-            <th>Date</th>
-            <th>People</th>
-            <th>Total Price</th>
-            <th>Status</th>
-            <th>Refund</th>
-            <th>Action</th>
-        </tr>
+    <div th:if="${bookings == null or bookings.isEmpty()}" class="bg-white rounded-3xl p-12 text-center shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20 max-w-2xl mx-auto mt-10">
+        <span class="material-symbols-outlined text-outline text-6xl mb-4 opacity-50">event_busy</span>
+        <h3 class="text-headline-md text-on-surface mb-2">No Bookings Yet</h3>
+        <p class="text-body-md text-on-surface-variant mb-6">You don't have any bookings at the moment. Time to plan your next adventure!</p>
+        <a th:href="@{/packages/list}" class="inline-block bg-primary text-on-primary px-8 py-3 rounded-full font-label-md hover:bg-primary-container transition-all shadow-md">
+            Explore Packages
+        </a>
+    </div>
 
-        <tr th:each="b : ${bookings}">
-            <td th:text="${b.id}"></td>
-            <td th:text="${b.packageName}"></td>
-            <td th:text="${b.location}"></td>
-            <td th:text="${b.bookingDate}"></td>
-            <td th:text="${b.numberOfPeople}"></td>
-            <td th:text="${b.totalPrice}"></td>
-            <td th:text="${b.bookingStatus}"></td>
-            <td th:text="${b.refundStatus}"></td>
-            <td>
-                <div th:if="${b.bookingStatus != 'Cancelled'}">
-                    <a th:href="@{'/booking/cancel/' + ${b.id}}"
-                       class="cancel-btn"
-                       onclick="return confirm('Are you sure you want to cancel this booking?');">
-                        Cancel
-                    </a>
-                </div>
+    <div th:if="${bookings != null and !bookings.isEmpty()}" class="bg-white rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-surface-container-low text-on-surface-variant text-label-md uppercase tracking-wider border-b border-outline-variant/30">
+                        <th class="py-4 px-6 font-bold">No.</th>
+                        <th class="py-4 px-6 font-bold">Package</th>
+                        <th class="py-4 px-6 font-bold">Location</th>
+                        <th class="py-4 px-6 font-bold">Date</th>
+                        <th class="py-4 px-6 font-bold">Guests</th>
+                        <th class="py-4 px-6 font-bold">Total Price</th>
+                        <th class="py-4 px-6 font-bold">Status</th>
+                        <th class="py-4 px-6 font-bold">Refund</th>
+                        <th class="py-4 px-6 font-bold text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/20">
+                    <tr th:each="b, stat : ${bookings}" class="hover:bg-surface-container-lowest transition-colors group">
+                        <td class="py-4 px-6 text-sm font-semibold text-on-surface" th:text="${stat.count}"></td>
+                        <td class="py-4 px-6 text-sm font-bold text-primary" th:text="${b.packageName}"></td>
+                        <td class="py-4 px-6 text-sm text-on-surface-variant" th:text="${b.location}"></td>
+                        <td class="py-4 px-6 text-sm text-on-surface-variant whitespace-nowrap" th:text="${b.bookingDate}"></td>
+                        <td class="py-4 px-6 text-sm text-on-surface-variant text-center" th:text="${b.numberOfPeople}"></td>
+                        <td class="py-4 px-6 text-sm font-bold text-secondary-container whitespace-nowrap" th:text="'Rs. ' + ${b.totalPrice}"></td>
+                        <td class="py-4 px-6 text-sm">
+                            <span th:if="${b.bookingStatus == 'Paid'}" class="inline-flex items-center gap-1 bg-green-100 text-green-800 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider">
+                                <span class="material-symbols-outlined text-[14px]">check_circle</span> Paid
+                            </span>
+                            <span th:if="${b.bookingStatus == 'Pending'}" class="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider">
+                                <span class="material-symbols-outlined text-[14px]">pending</span> Pending
+                            </span>
+                            <span th:if="${b.bookingStatus == 'Refund Requested'}" class="inline-flex items-center gap-1 bg-orange-100 text-orange-800 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider">
+                                <span class="material-symbols-outlined text-[14px]">history</span> Requested
+                            </span>
+                            <span th:if="${b.bookingStatus == 'Refunded'}" class="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider">
+                                <span class="material-symbols-outlined text-[14px]">currency_exchange</span> Refunded
+                            </span>
+                            <span th:if="${b.bookingStatus != 'Paid' and b.bookingStatus != 'Pending' and b.bookingStatus != 'Refund Requested' and b.bookingStatus != 'Refunded'}" class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider">
+                                <span th:text="${b.bookingStatus}"></span>
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-sm">
+                            <span th:if="${b.refundStatus == 'Not Requested'}" class="text-on-surface-variant italic text-xs">N/A</span>
+                            <span th:if="${b.refundStatus != 'Not Requested'}" class="font-semibold text-xs" th:text="${b.refundStatus}" th:classappend="${b.refundStatus == 'Refunded' ? 'text-green-600' : 'text-primary'}"></span>
+                        </td>
+                        <td class="py-4 px-6 text-center">
+                            <div class="flex flex-col gap-2 min-w-[140px]">
+                                <!-- Action for Pending -->
+                                <div th:if="${b.bookingStatus == 'Pending'}">
+                                    <a th:href="@{'/payment/page?amount=' + ${b.totalPrice} + '&bookingId=' + ${b.id}}"
+                                       class="block w-full bg-primary text-on-primary py-1.5 px-3 rounded-lg text-xs font-bold hover:bg-primary-container transition-colors shadow-sm mb-2">
+                                        Pay Now
+                                    </a>
+                                </div>
+                
+                                <!-- Action for Paid -->
+                                <div th:if="${b.bookingStatus == 'Paid'}">
+                                    <a th:href="@{'/refund/request/' + ${b.id}}" class="block w-full bg-secondary-container text-on-secondary-fixed py-1.5 px-3 rounded-lg text-xs font-bold hover:bg-secondary-fixed transition-colors shadow-sm">
+                                        Claim Refund
+                                    </a>
+                                </div>
+                                
+                                <!-- Action for Refund Requested -->
+                                <div th:if="${b.bookingStatus == 'Refund Requested'}">
+                                    <span class="block w-full bg-surface-container-high text-on-surface-variant py-1.5 px-3 rounded-lg text-xs font-bold opacity-70">
+                                        Refund Requested
+                                    </span>
+                                </div>
+                                
+                                <div th:if="${b.bookingStatus != 'Refunded' and b.bookingStatus != 'Refund Requested' and b.bookingStatus != 'Paid'}">
+                                    <a th:href="@{'/booking/cancel/' + ${b.id}}"
+                                       class="block w-full bg-error-container text-on-error-container py-1.5 px-3 rounded-lg text-xs font-bold hover:bg-error-container/80 transition-colors shadow-sm mt-1 btn-cancel-booking">
+                                        Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
 
-                <div th:if="${b.bookingStatus == 'Cancelled' and b.refundStatus == 'Pending'}">
-                    <a th:href="@{'/refund/request/' + ${b.id}}" class="refund-btn">
-                        Submit Refund Details
-                    </a>
-                </div>
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 
-                <div th:if="${b.bookingStatus == 'Cancelled' and b.refundStatus != 'Pending'}">
-                    Refund Requested
-                </div>
-            </td>
-        </tr>
-    </table>
-</div>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.btn-cancel-booking').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                Swal.fire({
+                    title: 'Cancel Booking?',
+                    text: "Are you sure you want to cancel this booking?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, cancel it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = href;
+                    }
+                });
+            });
+        });
+    });
+</script>
 
 </body>
 </html>
