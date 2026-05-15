@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Booking Success - TOURFLEX')}"></head>
+
+<body class="bg-surface text-on-background selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="bg-primary pt-24 pb-32">
+    <!-- Background Header space for navbar -->
+</div>
+
+<main class="flex-1 max-w-[1280px] mx-auto px-margin-desktop w-full -mt-24 mb-16 relative z-10 flex items-center justify-center">
+    <div class="w-full max-w-xl bg-white p-8 md:p-12 rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant/20 text-center">
+        
+        <div class="w-20 h-20 rounded-full bg-green-100 text-green-600 flex items-center justify-center mx-auto mb-6 shadow-sm border border-green-200">
+            <span class="material-symbols-outlined text-[40px]">task_alt</span>
+        </div>
+        
+        <h2 class="text-headline-md font-headline-md text-on-background mb-2">Booking Reserved!</h2>
+        <p class="text-body-md text-on-surface-variant mb-8">Your tour package has been successfully reserved. Please proceed to payment to finalize your booking.</p>
+
+        <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 text-left mb-8 shadow-sm">
+            <h3 class="text-label-md text-outline uppercase tracking-widest font-bold mb-4 border-b border-outline-variant/30 pb-2">Booking Summary</h3>
+            
+            <div class="space-y-3">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-on-surface-variant font-medium">Package</span>
+                    <span class="text-on-surface font-semibold truncate max-w-[200px] text-right" th:text="${booking.packageName}">Package Name</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-on-surface-variant font-medium">Location</span>
+                    <span class="text-on-surface font-semibold" th:text="${booking.location}">Location</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-on-surface-variant font-medium">Start Date</span>
+                    <span class="text-on-surface font-semibold" th:text="${booking.bookingDate}">Date</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-on-surface-variant font-medium">Guests</span>
+                    <span class="text-on-surface font-semibold" th:text="${booking.numberOfPeople}">0</span>
+                </div>
+                
+                <div class="pt-3 mt-3 border-t border-outline-variant/20 flex justify-between items-center">
+                    <span class="text-on-surface font-bold">Total Amount</span>
+                    <span class="text-xl font-extrabold text-primary" th:text="'Rs. ' + ${booking.totalPrice}">Rs. 0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+            <a th:href="@{'/payment/page?amount=' + ${booking.totalPrice} + '&customPackageId=' + ${customPackageId != null ? customPackageId : 0} + '&bookingId=' + ${booking.id}}" class="w-full bg-secondary-container text-on-secondary-fixed py-4 rounded-xl font-label-md font-bold hover:bg-secondary-fixed transition-colors shadow-md flex justify-center items-center gap-2 group">
+                Proceed to Payment <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </a>
+            <a th:href="@{/booking/my-bookings}" class="w-full bg-surface-container-low text-on-surface-variant py-4 rounded-xl font-label-md hover:bg-surface-container-high transition-colors font-semibold border border-outline-variant/30">
+                View My Bookings
+            </a>
+        </div>
+        
+    </div>
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
