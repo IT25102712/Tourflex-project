@@ -25,17 +25,19 @@ public class User {
     @Column(columnDefinition = "LONGBLOB")
     private byte[] image;
 
+    // default constructor
+    public User() {}
+
     // Getters and Setters
     public byte[] getImage() { return image; }
-    public void setImage(byte[] image) { this.image = image; }
 
-    public User() {}
+    public void setImage(byte[] image) { this.image = image; }
 
     public int getId() {
         return id;
     }
-    public void setId(int id) {
-        this.id = id; }
+
+    public void setId(int id) { this.id = id; }
 
     public String getName() {
         return name;
